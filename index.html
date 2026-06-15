@@ -45,8 +45,6 @@ input, select, textarea {
   letter-spacing: 1px; 
   color: #ffffff; 
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-  text-align: left;
-  padding-right: 10px;
 }
 .menu-trigger {
   font-size: 24px;
@@ -80,13 +78,13 @@ textarea {
   background: #333;
   color: #fff;
   border: 1px solid #555;
-  padding: 10px;
-  font-size: 14px;
+  padding: 8px;
+  font-size: 13px;
   border-radius: 4px;
-  height: 110px;
+  height: 90px;
+  resize: none;
 }
 
-/* メニュー内専用のボタン・入力欄スタイル */
 .menu-input-row {
   display: flex;
   gap: 6px;
@@ -173,7 +171,6 @@ input[type="datetime-local"] {
   padding: 11px 4px;
 }
 
-/* メニュー内用の行レイアウト */
 .menu-top-row {
   display: flex;
   gap: 8px;
@@ -195,21 +192,29 @@ input[type="datetime-local"] {
   text-align: center;
 }
 
-/* 動く進捗グラフエリア */
+/* 進捗グラフエリア */
 .progress-section {
   background: #111;
   border-radius: 10px;
-  padding: 10px 14px 4px 14px; 
+  padding: 6px 14px; 
   margin-bottom: 8px;
   border: 1px solid #222;
+}
+.graph-scale-container {
+  position: relative;
+  width: 100%;
+  height: 52px; 
+  margin: auto;
 }
 .graph-container {
   background-color: #222;
   border-radius: 4px;
-  height: 14px;
+  height: 12px;
   width: 100%;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: 20px; 
+  left: 0;
 }
 .graph-bar {
   height: 100%;
@@ -218,51 +223,90 @@ input[type="datetime-local"] {
   border-radius: 4px;
   transition: width 0.4s ease-out;
 }
-.graph-scale-container {
-  position: relative;
-  width: 100%;
-  height: 34px;
-}
+
+/* 動的目盛りスタイル */
 .scale-point {
   font-size: 10px;
-  color: #ffffff; 
+  font-weight: bold;
   position: absolute;
   transform: translateX(-50%);
   text-align: center;
   white-space: nowrap;
+  transition: transform 0.2s ease, font-size 0.2s ease, text-shadow 0.2s ease;
 }
 
-/* 奇数用（上段）の配置スタイル */
-.scale-point.odd {
-  top: 5px;
-}
-.scale-point.odd::before {
-  content: "";
+.scale-point[data-full]::after {
+  content: attr(data-full);
   position: absolute;
-  top: -5px;
+  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
-  width: 1px;
-  height: 4px;
-  background-color: #ffffff;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  display: none;
+  white-space: nowrap;
+  border: 1px solid #555;
+  z-index: 10;
+}
+.scale-point[data-full]:active::after {
+  display: block;
 }
 
-/* 偶数用（下段）の配置スタイル */
-.scale-point.even {
-  top: 18px;
+/* 明滅アニメーション */
+@keyframes pulse-pc {
+  0% { text-shadow: 0 0 4px #00d2ff; }
+  50% { text-shadow: 0 0 14px #00d2ff, 0 0 20px #00d2ff; }
+  100% { text-shadow: 0 0 4px #00d2ff; }
 }
-.scale-point.even::before {
-  content: "";
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  height: 17px; 
-  background-color: #ffffff;
+@keyframes pulse-shop {
+  0% { text-shadow: 0 0 4px #00ffaa; }
+  50% { text-shadow: 0 0 14px #00ffaa, 0 0 20px #00ffaa; }
+  100% { text-shadow: 0 0 4px #00ffaa; }
 }
 
-/* PC情報枠 */
+/* ★現在選択・アクティブなチェックポイントの強調定義 */
+.scale-point.active-pc {
+  font-size: 14px !important;
+  transform: translateX(-50%) scale(1.2);
+  z-index: 5;
+  animation: pulse-pc 1.5s infinite;
+}
+.scale-point.active-shop {
+  font-size: 14px !important;
+  transform: translateX(-50%) scale(1.2);
+  z-index: 5;
+  animation: pulse-shop 1.5s infinite;
+}
+
+/* PCチェック用（上・青） */
+.scale-point.pc-type {
+  top: 2px;
+  color: #00d2ff;
+}
+.scale-point.pc-type::before {
+  content: ""; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 1px; height: 4px; background-color: #00d2ff;
+}
+/* コミビニ・休憩用（下・緑） */
+.scale-point.shop-type {
+  bottom: 2px;
+  color: #00ffaa;
+}
+.scale-point.shop-type::before {
+  content: ""; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 1px; height: 4px; background-color: #00ffaa;
+}
+/* START/GOAL（白） */
+.scale-point.neutral-type {
+  top: 2px;
+  color: #ffffff;
+}
+.scale-point.neutral-type::before {
+  content: ""; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 1px; height: 4px; background-color: #ffffff;
+}
+
+/* 【PC専用】情報枠スタイル（青） */
 .full-width-pc-card {
   width: 100%;
   background: #0a192f;      
@@ -287,10 +331,7 @@ input[type="datetime-local"] {
   font-weight: bold;
   cursor: pointer;
 }
-.pc-nav-btn:active {
-  background: #00d2ff;
-  color: #000;
-}
+.pc-nav-btn:active { background: #00d2ff; color: #000; }
 .pc-title-label {
   color: #00d2ff;            
   font-size: 15px;           
@@ -309,14 +350,51 @@ input[type="datetime-local"] {
   padding-bottom: 6px;
 }
 
-/* 速度グリッド */
-.pc-speed-grid {
+/* 【コンビニ・その他専用】情報枠スタイル（緑） */
+.full-width-shop-card {
+  width: 100%;
+  background: #061f14;      
+  border: 1px solid #00ffaa; 
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+.shop-nav-btn {
+  background: #0d3824;
+  color: #00ffaa;
+  border: 1px solid #00ffaa;
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.shop-nav-btn:active { background: #00ffaa; color: #000; }
+.shop-title-label {
+  color: #00ffaa;            
+  font-size: 15px;           
+  font-weight: bold;
+  line-height: 1.3;
+  text-align: center;
+  flex: 1;
+  padding: 0 4px;
+}
+.shop-main-row {
+  display: flex;
+  justify-content: center; 
+  align-items: baseline;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+/* 速度表示共通グリッド */
+.speed-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 
   gap: 8px 4px; 
   text-align: center;
 }
-.pc-speed-cell {
+.speed-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -327,7 +405,7 @@ input[type="datetime-local"] {
   font-weight: normal;
   margin-bottom: 2px;
 }
-.pc-speed-td {
+.speed-td {
   font-size: 16px; 
   font-weight: bold;
   color: #ffffff;
@@ -356,7 +434,6 @@ input[type="datetime-local"] {
   width: 100%;
 }
 
-/* フッター */
 .footer {
   margin-top: 25px;
   margin-bottom: 15px;
@@ -366,7 +443,6 @@ input[type="datetime-local"] {
   letter-spacing: 0.5px;
 }
 
-/* 強調色 */
 .green { color: #00ff66; }
 .yellow { color: #ffcc00; }
 .red { color: #ff4444; }
@@ -398,13 +474,18 @@ input[type="datetime-local"] {
       </div>
     </div>
 
-    <div style="margin-bottom: 8px;">
-      <label class="menu-label">PCリスト登録 (貼り付け用)</label>
-      <textarea id="pcInput" placeholder="例:&#10;PC1, 御幸橋① フォト, 24.9km&#10;PC2、山城大橋 フォト，38.0km"></textarea>
+    <div style="margin-bottom: 10px;">
+      <label class="menu-label">① 公式PC・通過チェック リスト登録</label>
+      <textarea id="pcInput" placeholder="例:&#10;PC1, 御幸橋, 24.9km&#10;PC2, 山城大橋, 68.0km"></textarea>
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label class="menu-label">② コンビニ・休憩・任意スポット リスト登録</label>
+      <textarea id="shopInput" placeholder="例 (区切りは「,」「、」等。km無しでも自動追加):&#10;ローソン 八幡南店, 32.1&#10;セブン 宇治川店, 50.4"></textarea>
     </div>
 
     <div style="margin-bottom: 10px;">
-      <label class="menu-label">現在のリストを保存する</label>
+      <label class="menu-label">現在のリスト一式を保存する</label>
       <div class="menu-input-row">
         <input type="text" id="saveName" placeholder="例: BRM315泉佐野" style="font-size:14px; padding:6px; text-align:left;">
         <button class="btn-save" id="saveBtn">保存</button>
@@ -436,11 +517,11 @@ input[type="datetime-local"] {
   </div>
 
   <div class="progress-section">
-    <div class="graph-container">
-      <div id="graphBar" class="graph-bar"></div>
-    </div>
     <div class="graph-scale-container" id="graphScale">
+      <div class="graph-container">
+        <div id="graphBar" class="graph-bar"></div>
       </div>
+    </div>
   </div>
 
   <div class="card full-width-pc-card" id="pcCard">
@@ -454,13 +535,25 @@ input[type="datetime-local"] {
       <div class="value highlight" id="pcRemainDist" style="font-size:26px; text-align: center; cursor: pointer; padding: 0 20px;">残り -- km</div>
     </div>
     
-    <div class="pc-speed-grid">
-      <div class="pc-speed-cell"><div class="pc-speed-th">15km/h</div><div class="pc-speed-td" id="sp15">--:--</div></div>
-      <div class="pc-speed-cell"><div class="pc-speed-th">16km/h</div><div class="pc-speed-td" id="sp16">--:--</div></div>
-      <div class="pc-speed-cell"><div class="pc-speed-th">17km/h</div><div class="pc-speed-td" id="sp17">--:--</div></div>
-      <div class="pc-speed-cell"><div class="pc-speed-th">18km/h</div><div class="pc-speed-td" id="sp18">--:--</div></div>
-      <div class="pc-speed-cell"><div class="pc-speed-th">19km/h</div><div class="pc-speed-td" id="sp19">--:--</div></div>
-      <div class="pc-speed-cell"><div class="pc-speed-th">20km/h</div><div class="pc-speed-td" id="sp20">--:--</div></div>
+    <div class="speed-grid">
+      <div class="speed-cell"><div class="pc-speed-th">15km/h</div><div class="speed-td" id="pc_sp15">--:--</div></div>
+      <div class="speed-cell"><div class="pc-speed-th">16km/h</div><div class="speed-td" id="pc_sp16">--:--</div></div>
+      <div class="speed-cell"><div class="pc-speed-th">17km/h</div><div class="speed-td" id="pc_sp17">--:--</div></div>
+      <div class="speed-cell"><div class="pc-speed-th">18km/h</div><div class="speed-td" id="pc_sp18">--:--</div></div>
+      <div class="speed-cell"><div class="pc-speed-th">19km/h</div><div class="speed-td" id="pc_sp19">--:--</div></div>
+      <div class="speed-cell"><div class="pc-speed-th">20km/h</div><div class="speed-td" id="pc_sp20">--:--</div></div>
+    </div>
+  </div>
+
+  <div class="card full-width-shop-card" id="shopCard">
+    <div class="pc-header-row">
+      <button class="shop-nav-btn" id="shopPrevBtn">◀ 前</button>
+      <div id="shopLabel" class="shop-title-label">NEXT休憩: ---</div>
+      <button class="shop-nav-btn" id="shopNextBtn">次 ▶</button>
+    </div>
+    
+    <div class="shop-main-row">
+      <div class="value green" id="shopRemainDist" style="font-size:26px; text-align: center; cursor: pointer; padding: 0 20px;">残り -- km</div>
     </div>
   </div>
 
@@ -489,12 +582,19 @@ const brm = document.getElementById("brm");
 const startTime = document.getElementById("startTime");
 const distance = document.getElementById("distance");
 const pcInput = document.getElementById("pcInput");
+const shopInput = document.getElementById("shopInput");
 const menuTrigger = document.getElementById("menuTrigger");
 const menuContent = document.getElementById("menuContent");
 const resetBtn = document.getElementById("resetBtn");
+
 const pcPrevBtn = document.getElementById("pcPrevBtn");
 const pcNextBtn = document.getElementById("pcNextBtn");
 const pcRemainDist = document.getElementById("pcRemainDist");
+
+const shopPrevBtn = document.getElementById("shopPrevBtn");
+const shopNextBtn = document.getElementById("shopNextBtn");
+const shopRemainDist = document.getElementById("shopRemainDist");
+
 const graphBar = document.getElementById("graphBar");
 const graphScale = document.getElementById("graphScale");
 
@@ -503,18 +603,37 @@ const saveBtn = document.getElementById("saveBtn");
 const savedListsSelect = document.getElementById("savedListsSelect");
 const deleteBtn = document.getElementById("deleteBtn");
 
-const defaultPCList = "PC1, 御幸橋① フォト, 24.9km\nPC2, 山城大橋 フォト, 38.0km";
+const circleNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩", "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳"];
 
-let globalPCList = [];
-let currentDisplayIndex = -1; 
-let autoTrackIdx = -1;        
-let isUserNavigating = false; 
+// デフォルトサンプル
+const defaultPCList = "PC1, 御幸橋, 24.9km\nPC2, 山城大橋, 68.0km";
+const defaultShopList = "ローソン 八幡南店, 32.1\nセブン 宇治川店, 50.4";
+
+let globalPCList = [];   
+let globalShopList = []; 
+
+let pcDisplayIdx = -1; 
+let pcAutoTrackIdx = -1;        
+let isPcUserNavigating = false; 
+
+let shopDisplayIdx = -1;
+let shopAutoTrackIdx = -1;
+let isShopUserNavigating = false;
+
 let tempDistanceValue = ""; 
 
+function toHalfWidthAlphaNum(str) {
+  return str.replace(/[！-～]/g, function(s) {
+    return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+  }).replace(/[\s ]+/g, '').toUpperCase();
+}
+
+// ローカルストレージ読込
 startTime.value = localStorage.getItem("startTime") || "";
 brm.value = localStorage.getItem("brm") || "200,13.5";
 distance.value = localStorage.getItem("distance") || "";
-pcInput.value = localStorage.getItem("pcList") || defaultPCList;
+pcInput.value = localStorage.getItem("pcList3") || defaultPCList;
+shopInput.value = localStorage.getItem("shopList3") || defaultShopList;
 
 menuTrigger.addEventListener("click", () => menuContent.classList.toggle("open"));
 
@@ -531,19 +650,25 @@ distance.addEventListener("blur", () => {
 });
 
 pcRemainDist.addEventListener("dblclick", () => {
-  if (isUserNavigating) {
-    isUserNavigating = false; 
-    currentDisplayIndex = autoTrackIdx; 
-    updateDisplayOnly();
+  if (isPcUserNavigating) {
+    isPcUserNavigating = false; 
+    pcDisplayIdx = pcAutoTrackIdx; 
+    update(true); // 強調を再描画するためにupdateを呼ぶ
+  }
+});
+
+shopRemainDist.addEventListener("dblclick", () => {
+  if (isShopUserNavigating) {
+    isShopUserNavigating = false;
+    shopDisplayIdx = shopAutoTrackIdx;
+    update(true);
   }
 });
 
 function loadSavedListsDropdown() {
-  const savedData = localStorage.getItem("customPCLists");
+  const savedData = localStorage.getItem("customBRMDataSets3");
   let lists = savedData ? JSON.parse(savedData) : {};
-  
   savedListsSelect.innerHTML = "";
-  
   const keys = Object.keys(lists);
   if (keys.length === 0) {
     const opt = document.createElement("option");
@@ -552,12 +677,10 @@ function loadSavedListsDropdown() {
     savedListsSelect.appendChild(opt);
     return;
   }
-  
   const defaultOpt = document.createElement("option");
   defaultOpt.value = "";
   defaultOpt.innerText = "-- リストを選択して呼び出し --";
   savedListsSelect.appendChild(defaultOpt);
-  
   keys.forEach(key => {
     const opt = document.createElement("option");
     opt.value = key;
@@ -568,89 +691,99 @@ function loadSavedListsDropdown() {
 
 saveBtn.addEventListener("click", () => {
   const name = saveName.value.trim();
-  const text = pcInput.value.trim();
-  
-  if (!name) {
-    alert("保存する名前を入力してください。");
-    return;
-  }
-  if (!text) {
-    alert("保存するPCリストの中身が空です。");
-    return;
-  }
-  
-  const savedData = localStorage.getItem("customPCLists");
+  if (!name) { alert("保存する名前を入力してください。"); return; }
+  const savedData = localStorage.getItem("customBRMDataSets3");
   let lists = savedData ? JSON.parse(savedData) : {};
   
-  lists[name] = text;
-  localStorage.setItem("customPCLists", JSON.stringify(lists));
+  lists[name] = {
+    pc: pcInput.value.trim(),
+    shop: shopInput.value.trim()
+  };
   
+  localStorage.setItem("customBRMDataSets3", JSON.stringify(lists));
   saveName.value = ""; 
   loadSavedListsDropdown(); 
-  alert("リスト「" + name + "」を保存しました。");
+  alert("セット「" + name + "」を保存しました。");
 });
 
 savedListsSelect.addEventListener("change", () => {
   const selectedName = savedListsSelect.value;
   if (!selectedName) return;
-  
-  const savedData = localStorage.getItem("customPCLists");
+  const savedData = localStorage.getItem("customBRMDataSets3");
   let lists = savedData ? JSON.parse(savedData) : {};
-  
   if (lists[selectedName]) {
-    pcInput.value = lists[selectedName];
-    isUserNavigating = false; 
+    const data = lists[selectedName];
+    pcInput.value = data.pc || "";
+    shopInput.value = data.shop || "";
+    isPcUserNavigating = false; 
+    isShopUserNavigating = false;
     update(true); 
-    alert("「" + selectedName + "」のリストを読み込みました。");
+    alert("「" + selectedName + "」のデータを読み込みました。");
   }
 });
 
 deleteBtn.addEventListener("click", () => {
   const selectedName = savedListsSelect.value;
-  if (!selectedName) {
-    alert("削除したいリストを選択してください。");
-    return;
-  }
-  
+  if (!selectedName) { alert("削除したいリストを選択してください。"); return; }
   if (confirm("リスト「" + selectedName + "」を削除してもよろしいですか？")) {
-    const savedData = localStorage.getItem("customPCLists");
+    const savedData = localStorage.getItem("customBRMDataSets3");
     let lists = savedData ? JSON.parse(savedData) : {};
-    
     delete lists[selectedName];
-    localStorage.setItem("customPCLists", JSON.stringify(lists));
-    
+    localStorage.setItem("customBRMDataSets3", JSON.stringify(lists));
     loadSavedListsDropdown(); 
     alert("削除しました。");
   }
 });
 
-pcPrevBtn.addEventListener("click", (e) => {
+// ナビボタンイベント（切り替え時に即座にグラフ目盛りを再レンダリング）
+pcPrevBtn.addEventListener("click", () => {
   if (globalPCList.length === 0) return;
-  if (currentDisplayIndex > 0) {
-    isUserNavigating = true; 
-    currentDisplayIndex--;
-    updateDisplayOnly();
+  if (pcDisplayIdx > 0) { 
+    isPcUserNavigating = true; 
+    pcDisplayIdx--; 
+    const [targetDistance] = brm.value.split(",").map(Number);
+    renderGraphScale(targetDistance);
+    updateDisplayOnly(); 
+  }
+});
+pcNextBtn.addEventListener("click", () => {
+  if (globalPCList.length === 0) return;
+  if (pcDisplayIdx < globalPCList.length - 1) { 
+    isPcUserNavigating = true; 
+    pcDisplayIdx++; 
+    const [targetDistance] = brm.value.split(",").map(Number);
+    renderGraphScale(targetDistance);
+    updateDisplayOnly(); 
   }
 });
 
-pcNextBtn.addEventListener("click", (e) => {
-  if (globalPCList.length === 0) return;
-  if (currentDisplayIndex < globalPCList.length - 1) {
-    isUserNavigating = true; 
-    currentDisplayIndex++;
-    updateDisplayOnly();
+shopPrevBtn.addEventListener("click", () => {
+  if (globalShopList.length === 0) return;
+  if (shopDisplayIdx > 0) { 
+    isShopUserNavigating = true; 
+    shopDisplayIdx--; 
+    const [targetDistance] = brm.value.split(",").map(Number);
+    renderGraphScale(targetDistance);
+    updateDisplayOnly(); 
+  }
+});
+shopNextBtn.addEventListener("click", () => {
+  if (globalShopList.length === 0) return;
+  if (shopDisplayIdx < globalShopList.length - 1) { 
+    isShopUserNavigating = true; 
+    shopDisplayIdx++; 
+    const [targetDistance] = brm.value.split(",").map(Number);
+    renderGraphScale(targetDistance);
+    updateDisplayOnly(); 
   }
 });
 
 function formatArrivalDate(targetDate, startStr) {
   if (!startStr) return "--:--";
   const start = new Date(startStr);
-  
   const hrs = String(targetDate.getHours()).padStart(2, '0');
   const mins = String(targetDate.getMinutes()).padStart(2, '0');
-  
   const isNextDay = targetDate.getDate() !== start.getDate() || targetDate.getMonth() !== start.getMonth();
-  
   if (isNextDay) {
     const dayLabels = ["日", "月", "火", "水", "木", "金", "土"];
     return dayLabels[targetDate.getDay()] + ")" + hrs + ":" + mins;
@@ -659,29 +792,8 @@ function formatArrivalDate(targetDate, startStr) {
 }
 
 function updateDisplayOnly() {
-  if (globalPCList.length === 0 || currentDisplayIndex === -1) return;
-  
-  const selectedPC = globalPCList[currentDisplayIndex];
   const currentDist = parseFloat(distance.value) || 0;
-  const diffDist = selectedPC.dist - currentDist;
-
-  let prefix = "";
-  if (currentDisplayIndex === autoTrackIdx) {
-    prefix = "NEXT: ";
-  } else if (currentDisplayIndex < autoTrackIdx) {
-    prefix = "通過済: ";
-  } else {
-    prefix = "先々: ";
-  }
-
-  document.getElementById("pcLabel").innerText = prefix + selectedPC.id + " " + selectedPC.name + "（" + selectedPC.dist.toFixed(1) + "km）";
-
-  if (diffDist >= 0) {
-    pcRemainDist.innerText = "残り " + diffDist.toFixed(1) + " km";
-  } else {
-    pcRemainDist.innerText = "通過後 " + Math.abs(diffDist).toFixed(1) + " km";
-  }
-
+  
   let startReady = false;
   let start = null;
   if (startTime.value) {
@@ -689,71 +801,160 @@ function updateDisplayOnly() {
     if (!isNaN(start.getTime())) startReady = true;
   }
 
-  if (startReady) {
+  // --- ① PCカード表示 ---
+  if (globalPCList.length > 0 && pcDisplayIdx !== -1) {
+    const selectedPC = globalPCList[pcDisplayIdx];
+    const diffDist = selectedPC.dist - currentDist;
+    let prefix = (pcDisplayIdx === pcAutoTrackIdx) ? "NEXT: " : (pcDisplayIdx < pcAutoTrackIdx ? "通過済: " : "先々: ");
+    
+    let rawDist = selectedPC.dist.toFixed(1);
+    document.getElementById("pcLabel").innerText = prefix + selectedPC.id + " " + selectedPC.name + "（" + rawDist + "km）";
+    pcRemainDist.innerText = diffDist >= 0 ? "残り " + diffDist.toFixed(1) + " km" : "通過後 " + Math.abs(diffDist).toFixed(1) + " km";
+
     const speeds = [15, 16, 17, 18, 19, 20];
     speeds.forEach(speed => {
-      const totalHoursFromStart = selectedPC.dist / speed;
-      const arrivalDate = new Date(start.getTime() + totalHoursFromStart * 3600000);
-      document.getElementById("sp" + speed).innerText = formatArrivalDate(arrivalDate, startTime.value);
+      const el = document.getElementById("pc_sp" + speed);
+      if (startReady) {
+        const arrivalDate = new Date(start.getTime() + (selectedPC.dist / speed) * 3600000);
+        el.innerText = formatArrivalDate(arrivalDate, startTime.value);
+      } else { el.innerText = "--:--"; }
     });
   } else {
-    ["15","16","17","18","19","20"].forEach(s => document.getElementById("sp" + s).innerText = "--:--");
+    document.getElementById("pcLabel").innerText = "NEXT: GOAL";
+    pcRemainDist.innerText = "残り 0.0 km";
+    ["15","16","17","18","19","20"].forEach(s => document.getElementById("pc_sp" + s).innerText = "--:--");
+  }
+
+  // --- ② コンビニ休憩カード表示 ---
+  if (globalShopList.length > 0 && shopDisplayIdx !== -1) {
+    const selectedShop = globalShopList[shopDisplayIdx];
+    const diffDist = selectedShop.dist - currentDist;
+    let prefix = (shopDisplayIdx === shopAutoTrackIdx) ? "NEXT休憩: " : (shopDisplayIdx < shopAutoTrackIdx ? "通過済休憩: " : "先々休憩: ");
+    
+    let rawDist = selectedShop.dist.toFixed(1);
+    document.getElementById("shopLabel").innerText = prefix + selectedShop.name + "（" + rawDist + "km）";
+    shopRemainDist.innerText = diffDist >= 0 ? "残り " + diffDist.toFixed(1) + " km" : "通過後 " + Math.abs(diffDist).toFixed(1) + " km";
+  } else {
+    document.getElementById("shopLabel").innerText = "NEXT休憩: 登録なし";
+    shopRemainDist.innerText = "残り -- km";
   }
 }
 
-// 千鳥配置に対応したグラフ目盛りレンダリング関数
+// グラフ目盛りの描画（★現在選択インデックスに合わせたクラス付与ロジックを追加）
 function renderGraphScale(targetDistance) {
-  graphScale.innerHTML = ""; 
-  
-  // スタート地点 (0km)
-  createScalePoint(0, "START", true);
+  const items = graphScale.querySelectorAll(".scale-point");
+  items.forEach(el => el.remove());
 
-  // PC以外のチェックポイントに割り当てる丸数字用のカウンター
-  const circleNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩", "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳"];
-  let nonPcCount = 0;
+  createScalePoint(0, "START", "neutral-type", "START", false);
+  createScalePoint(100, "GOAL", "neutral-type", "GOAL", false);
 
-  // 各PC地点をループ
-  globalPCList.forEach((pc, index) => {
-    if (pc.dist < targetDistance) {
-      const pct = (pc.dist / targetDistance) * 100;
-      const isOdd = (index % 2 === 0);
+  // 1. PCチェックの描画
+  let lastPctPC = 0;
+  globalPCList.forEach((p, idx) => {
+    if (p.dist < targetDistance) {
+      const pct = (p.dist / targetDistance) * 100;
+      let label = p.id;
+      // 現在カードで選択されているポイントかどうかを判定
+      const isActive = (idx === pcDisplayIdx); 
       
-      // 文字列（id または name）に「PC」が含まれているか正規表現でチェック
-      const isPcType = /PC/i.test(pc.id) || /PC/i.test(pc.name);
-      
-      let displayLabel = "";
-      if (isPcType) {
-        // 【修正】「PC」が含まれる場合は「PC1」「PC2」「PC10」のように数字部分までを抽出して止める
-        // id（PC1、PC2等）から英字の「PC」とそれに続く数字だけを取り出す
-        const match = pc.id.match(/PC\d+/i);
-        displayLabel = match ? match[0].toUpperCase() : pc.id;
+      let typeClass = "pc-type";
+      if (isActive) typeClass += " active-pc";
+
+      if (pct - lastPctPC < 5 && pct > 0 && !isActive) {
+        createScalePoint(pct, "・", typeClass, label, isActive);
       } else {
-        // PC以外の通過チェックやフォトの場合は、丸数字（①、②…）を割り当てる
-        displayLabel = circleNumbers[nonPcCount] || `(${nonPcCount + 1})`;
-        nonPcCount++;
+        createScalePoint(pct, label, typeClass, label, isActive);
+        lastPctPC = pct;
       }
-      
-      createScalePoint(pct, displayLabel, isOdd);
     }
   });
 
-  // ゴール地点 (MAX km)
-  createScalePoint(100, "GOAL", false);
+  // 2. コンビニ休憩の描画
+  let lastPctShop = 0;
+  globalShopList.forEach((s, idx) => {
+    if (s.dist < targetDistance) {
+      const pct = (s.dist / targetDistance) * 100;
+      let label = s.id;
+      // 現在カードで選択されているポイントかどうかを判定
+      const isActive = (idx === shopDisplayIdx);
+
+      let typeClass = "shop-type";
+      if (isActive) typeClass += " active-shop";
+
+      if (pct - lastPctShop < 5 && pct > 0 && !isActive) {
+        createScalePoint(pct, "・", typeClass, label, isActive);
+      } else {
+        createScalePoint(pct, label, typeClass, label, isActive);
+        lastPctShop = pct;
+      }
+    }
+  });
 }
 
-function createScalePoint(leftPct, label, isOdd) {
+function createScalePoint(leftPct, label, className, fullText, isActive) {
   const div = document.createElement("div");
-  div.className = "scale-point " + (isOdd ? "odd" : "even");
+  div.className = "scale-point " + className;
   div.style.left = leftPct + "%";
   div.innerText = label;
+  // 被り回避で「・」になっていても、現在選択中なら強制的にテキストを復元して読めるようにする
+  if (isActive && fullText) {
+    div.innerText = fullText;
+  }
+  if (label === "・" && fullText) {
+    div.setAttribute("data-full", fullText);
+  }
   graphScale.appendChild(div);
+}
+
+function parseTextList(textData, isPCMode = false) {
+  const lines = textData.split("\n").filter(line => line.trim() !== "");
+  const tempResult = [];
+  
+  for (let line of lines) {
+    const columns = line.split(/[,,、，]/).map(c => c.trim());
+    if (columns.length < 2) continue;
+    
+    let idOrName = columns[0];
+    let secondVal = columns[1];
+    let distStr = (isPCMode && columns.length >= 3) ? columns[2] : secondVal;
+    const itemDist = parseFloat(distStr.replace(/[^\d.]/g, ""));
+    
+    if (!isNaN(itemDist)) {
+      if (isPCMode && columns.length >= 3) {
+        tempResult.push({ rawId: idOrName, name: secondVal, dist: itemDist });
+      } else {
+        tempResult.push({ rawId: "", name: idOrName, dist: itemDist });
+      }
+    }
+  }
+  
+  tempResult.sort((a, b) => a.dist - b.dist);
+  let genericCounter = 0;
+
+  return tempResult.map(item => {
+    let finalId = "";
+    if (isPCMode) {
+      let cleanId = toHalfWidthAlphaNum(item.rawId);
+      if (cleanId.startsWith("PC")) {
+        finalId = cleanId; 
+      } else {
+        finalId = circleNumbers[genericCounter] || `(${genericCounter + 1})`;
+        genericCounter++;
+      }
+    } else {
+      finalId = circleNumbers[genericCounter] || `(${genericCounter + 1})`;
+      genericCounter++;
+    }
+    return { id: finalId, name: item.name, dist: item.dist };
+  });
 }
 
 function update(isDistanceOrInputChanged = false) {
   localStorage.setItem("startTime", startTime.value);
   localStorage.setItem("brm", brm.value);
   localStorage.setItem("distance", distance.value);
-  localStorage.setItem("pcList", pcInput.value);
+  localStorage.setItem("pcList3", pcInput.value);
+  localStorage.setItem("shopList3", shopInput.value);
 
   const now = new Date();
   const hrs = String(now.getHours()).padStart(2, '0');
@@ -761,67 +962,50 @@ function update(isDistanceOrInputChanged = false) {
   const secs = String(now.getSeconds()).padStart(2, '0');
   document.getElementById("currentTime").innerText = hrs + ":" + mins + ":" + secs;
 
-  let startReady = false;
-  let start = null;
-  if (startTime.value) {
-    start = new Date(startTime.value);
-    if (!isNaN(start.getTime())) startReady = true;
-  }
-
   const currentDist = parseFloat(distance.value) || 0;
   const [targetDistance, limitHours] = brm.value.split(",").map(Number);
 
-  const pcLines = pcInput.value.split("\n").filter(line => line.trim() !== "");
-  globalPCList = [];
-  
-  for (let line of pcLines) {
-    const columns = line.split(/[,,、，]/).map(c => c.trim());
-    if (columns.length < 3) continue;
-    const pcDist = parseFloat(columns[2].replace(/[^\d.]/g, ""));
-    if (!isNaN(pcDist)) {
-      globalPCList.push({ id: columns[0], name: columns[1], dist: pcDist });
-    }
-  }
+  globalPCList = parseTextList(pcInput.value, true);
+  globalShopList = parseTextList(shopInput.value, false);
 
   let progressPct = (currentDist / targetDistance) * 100;
   if (progressPct < 0) progressPct = 0;
   if (progressPct > 100) progressPct = 100;
   graphBar.style.width = progressPct + "%";
 
-  renderGraphScale(targetDistance);
-
-  let detectedTrackIdx = globalPCList.length > 0 ? globalPCList.length - 1 : -1;
+  // PC自動追従
+  let detectedPcIdx = globalPCList.length > 0 ? globalPCList.length - 1 : -1;
   for (let i = 0; i < globalPCList.length; i++) {
-    if (globalPCList[i].dist > currentDist) {
-      detectedTrackIdx = i;
-      break;
-    }
+    if (globalPCList[i].dist > currentDist) { detectedPcIdx = i; break; }
   }
-  
-  autoTrackIdx = detectedTrackIdx;
-
-  if (isDistanceOrInputChanged || !isUserNavigating || currentDisplayIndex === -1 || currentDisplayIndex >= globalPCList.length) {
-    if (isDistanceOrInputChanged) {
-      isUserNavigating = false; 
-    }
-    currentDisplayIndex = autoTrackIdx;
+  pcAutoTrackIdx = detectedPcIdx;
+  if (isDistanceOrInputChanged || !isPcUserNavigating || pcDisplayIdx === -1 || pcDisplayIdx >= globalPCList.length) {
+    if (isDistanceOrInputChanged) { isPcUserNavigating = false; }
+    pcDisplayIdx = pcAutoTrackIdx;
   }
 
-  if (globalPCList.length > 0 && currentDisplayIndex !== -1) {
-    updateDisplayOnly();
-  } else {
-    document.getElementById("pcLabel").innerText = "NEXT: GOAL";
-    pcRemainDist.innerText = "残り 0.0 km";
-    ["15","16","17","18","19","20"].forEach(s => document.getElementById("sp" + s).innerText = "--:--");
+  // コンビニ自動追従
+  let detectedShopIdx = globalShopList.length > 0 ? globalShopList.length - 1 : -1;
+  for (let i = 0; i < globalShopList.length; i++) {
+    if (globalShopList[i].dist > currentDist) { detectedShopIdx = i; break; }
+  }
+  shopAutoTrackIdx = detectedShopIdx;
+  if (isDistanceOrInputChanged || !isShopUserNavigating || shopDisplayIdx === -1 || shopDisplayIdx >= globalShopList.length) {
+    if (isDistanceOrInputChanged) { isShopUserNavigating = false; }
+    shopDisplayIdx = shopAutoTrackIdx;
   }
 
+  // トラックインデックス確定後にスケールを描画して、該当のインデックスにactive用スタイルを付与
+  renderGraphScale(targetDistance);
+  updateDisplayOnly();
+
+  // 走行計算処理
   if (!startTime.value || !distance.value) return;
-
+  let start = new Date(startTime.value);
   let elapsed = (now - start) / 1000 / 3600;
   if (elapsed <= 0) return;
 
   const gross = currentDist / elapsed;
-
   const eh = Math.floor(elapsed);
   const em = Math.floor((elapsed - eh) * 60);
   document.getElementById("elapsed").innerText = eh + "時間" + em + "分";
@@ -836,7 +1020,6 @@ function update(isDistanceOrInputChanged = false) {
   }
   
   document.getElementById("gross").innerText = gross.toFixed(2) + " km/h";
-  
   const remainDist = targetDistance - currentDist;
   document.getElementById("remainDistance").innerText = Math.max(0, remainDist).toFixed(1) + " km";
 
@@ -855,13 +1038,8 @@ function update(isDistanceOrInputChanged = false) {
   
   let statusIcon = "🔴";
   let statusClass = "big-value red"; 
-  if (saving >= 2) {
-    statusIcon = "🟢";
-    statusClass = "big-value green";
-  } else if (saving >= 1) {
-    statusIcon = "🟡";
-    statusClass = "big-value yellow";
-  }
+  if (saving >= 2) { statusIcon = "🟢"; statusClass = "big-value green"; }
+  else if (saving >= 1) { statusIcon = "🟡"; statusClass = "big-value yellow"; }
 
   const savingElement = document.getElementById("saving");
   savingElement.innerText = statusIcon + " " + savSign + savH + "時間" + savM + "分";
@@ -869,15 +1047,16 @@ function update(isDistanceOrInputChanged = false) {
 }
 
 resetBtn.addEventListener("click", () => {
-  if (confirm("「START日時」「現在距離」「PCリスト登録」の内容をリセットしますか？（※保存したリスト一覧は削除されません）")) {
-    
+  if (confirm("すべての設定、リスト、走行データをリセットしますか？")) {
     localStorage.removeItem("startTime");
     localStorage.removeItem("distance");
-    localStorage.removeItem("pcList");
+    localStorage.removeItem("pcList3");
+    localStorage.removeItem("shopList3");
 
     startTime.value = "";
     distance.value = "";
     pcInput.value = "";
+    shopInput.value = "";
     saveName.value = "";
     tempDistanceValue = "";
     graphBar.style.width = "0%";
@@ -890,23 +1069,21 @@ resetBtn.addEventListener("click", () => {
     document.getElementById("needSpeed").innerText = "--";
     document.getElementById("saving").innerText = "--";
     document.getElementById("saving").className = "big-value"; 
-    document.getElementById("pcLabel").innerText = "NEXT: PC-";
-    pcRemainDist.innerText = "残り -- km";
     
-    ["15","16","17","18","19","20"].forEach(s => document.getElementById("sp" + s).innerText = "--:--");
-
-    savedListsSelect.value = "";
-
-    isUserNavigating = false; 
+    isPcUserNavigating = false; 
+    isShopUserNavigating = false;
     menuContent.classList.remove("open");
     update(true);
-    alert("指定された項目をリセットしました。");
+    alert("リセットが完了しました。");
   }
 });
 
+// 1秒ごとの定期アップデートでは、不要なグラフ再描画（チラつき）を防ぐため
+// 距離や設定が変わった時（update(true)）のみ再描画をかける運用にしています
 setInterval(() => update(false), 1000);
 distance.addEventListener("input", () => update(true));
 pcInput.addEventListener("input", () => update(true));
+shopInput.addEventListener("input", () => update(true));
 startTime.addEventListener("change", () => update(false));
 brm.addEventListener("change", () => update(false));
 document.addEventListener("resume", () => update(false), false);
