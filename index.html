@@ -17,7 +17,7 @@
 body {
   background: #000;
   color: #fff;
-  padding: 6px; /* 10pxから縮小 */
+  padding: 6px; 
 }
 input, select, textarea {
   user-select: text !important;
@@ -34,20 +34,20 @@ input, select, textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 6px 8px 6px; /* 縦幅を大幅縮小 */
+  padding: 4px 6px 8px 6px; 
   border-bottom: 1px solid #222; 
   margin-bottom: 6px;
 }
 .header-title {
   font-family: 'Arial Black', Impact, sans-serif; 
-  font-size: 18px; /* 22pxから縮小 */
+  font-size: 20px; /* 18px -> 20px (2pxアップ) */
   font-style: italic; 
   letter-spacing: 1px; 
   color: #ffffff; 
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 .menu-trigger {
-  font-size: 20px; /* 24pxから縮小 */
+  font-size: 22px; /* 20px -> 22px (2pxアップ) */
   cursor: pointer;
   padding: 2px 6px;
   color: #ffffff; 
@@ -68,7 +68,7 @@ input, select, textarea {
   display: block;
 }
 .menu-label {
-  font-size: 13px;
+  font-size: 14px; /* 13px -> 14px */
   color: #aaa;
   margin-bottom: 4px;
   display: block;
@@ -79,7 +79,7 @@ textarea {
   color: #fff;
   border: 1px solid #555;
   padding: 6px;
-  font-size: 12px;
+  font-size: 13px; /* 12px -> 13px */
   border-radius: 4px;
   height: 80px;
   resize: none;
@@ -96,7 +96,7 @@ textarea {
   color: white;
   border: none;
   padding: 0 10px;
-  font-size: 13px;
+  font-size: 14px; /* 13px -> 14px */
   font-weight: bold;
   border-radius: 4px;
   cursor: pointer;
@@ -107,7 +107,7 @@ textarea {
   color: #ff4444;
   border: 1px solid #ff4444;
   padding: 0 10px;
-  font-size: 13px;
+  font-size: 14px; /* 13px -> 14px */
   font-weight: bold;
   border-radius: 4px;
   cursor: pointer;
@@ -119,7 +119,7 @@ textarea {
   color: white;
   border: none;
   padding: 10px;
-  font-size: 14px;
+  font-size: 15px; /* 14px -> 15px */
   font-weight: bold;
   border-radius: 6px;
   margin-top: 8px;
@@ -129,7 +129,7 @@ textarea {
 .slim-card {
   background: #1a1a1a;
   border-radius: 8px;
-  padding: 4px 8px; /* 縦幅を縮小 */
+  padding: 5px 8px; /* 文字拡大に伴いパディングをごく僅かに調整 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -143,13 +143,13 @@ textarea {
 }
 .label-center {
   display: block;
-  font-size: 12px;
+  font-size: 13px; /* 12px -> 13px */
   color: #bbb;
   margin-bottom: 2px;
   text-align: center;
 }
 .title {
-  font-size: 11px; /* 13pxから一回り小さく */
+  font-size: 13px; /* 11px -> 13px (2pxアップ) */
   color: #aaa;
   margin-bottom: 1px;
   text-align: center;
@@ -157,8 +157,8 @@ textarea {
 
 input, select {
   width: 100%;
-  padding: 6px; /* 10pxから縮小 */
-  font-size: 15px;
+  padding: 6px; 
+  font-size: 17px; /* 15px -> 17px (2pxアップ) */
   border: none;
   border-radius: 5px;
   background: #333;
@@ -167,7 +167,7 @@ input, select {
   text-align-last: center; 
 }
 input[type="datetime-local"] {
-  font-size: 12px;
+  font-size: 13px; /* 12px -> 13px */
   padding: 7px 4px;
 }
 
@@ -181,13 +181,13 @@ input[type="datetime-local"] {
 }
 
 .current-time-display {
-  font-size: 20px; /* 24pxから縮小 */
+  font-size: 22px; /* 20px -> 22px (2pxアップ) */
   font-weight: bold;
   color: #00e5ff; 
   text-align: center;
 }
 .value {
-  font-size: 18px; /* 24pxから縮小 */
+  font-size: 20px; /* 18px -> 20px (2pxアップ) */
   font-weight: bold;
   text-align: center;
 }
@@ -203,17 +203,17 @@ input[type="datetime-local"] {
 .graph-scale-container {
   position: relative;
   width: 100%;
-  height: 44px; /* 52pxから縮小 */
+  height: 46px; /* スケール文字拡大のため44pxから微増 */
   margin: auto;
 }
 .graph-container {
   background-color: #222;
   border-radius: 4px;
-  height: 10px; /* 12pxから縮小 */
+  height: 10px; 
   width: 100%;
   overflow: hidden;
   position: absolute;
-  top: 17px; /* 縦幅に合わせて微調整 */
+  top: 18px; 
   left: 0;
 }
 .graph-bar {
@@ -226,7 +226,7 @@ input[type="datetime-local"] {
 
 /* 動的目盛りスタイル */
 .scale-point {
-  font-size: 9px; /* 10pxからスリム化 */
+  font-size: 11px; /* 9px -> 11px (2pxアップ) */
   font-weight: bold;
   position: absolute;
   transform: translateX(-50%);
@@ -245,7 +245,7 @@ input[type="datetime-local"] {
   color: #fff;
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 9px;
+  font-size: 10px;
   display: none;
   white-space: nowrap;
   border: 1px solid #555;
@@ -269,13 +269,13 @@ input[type="datetime-local"] {
 
 /* 現在選択・アクティブなチェックポイントの強調定義 */
 .scale-point.active-pc {
-  font-size: 12px !important; /* 14pxから縮小 */
+  font-size: 14px !important; /* 12px -> 14px (2pxアップ) */
   transform: translateX(-50%) scale(1.15);
   z-index: 5;
   animation: pulse-pc 1.5s infinite;
 }
 .scale-point.active-shop {
-  font-size: 12px !important;
+  font-size: 14px !important; /* 12px -> 14px (2pxアップ) */
   transform: translateX(-50%) scale(1.15);
   z-index: 5;
   animation: pulse-shop 1.5s infinite;
@@ -312,7 +312,7 @@ input[type="datetime-local"] {
   background: #0a192f;      
   border: 1px solid #00d2ff; 
   border-radius: 8px;
-  padding: 8px 10px; /* 12pxから縮小 */
+  padding: 8px 10px; 
   margin-bottom: 6px;
 }
 .pc-header-row {
@@ -326,15 +326,15 @@ input[type="datetime-local"] {
   color: #00d2ff;
   border: 1px solid #00d2ff;
   border-radius: 4px;
-  padding: 2px 8px; /* パディング縮小 */
-  font-size: 12px;
+  padding: 2px 8px; 
+  font-size: 13px; /* 12px -> 13px */
   font-weight: bold;
   cursor: pointer;
 }
 .pc-nav-btn:active { background: #00d2ff; color: #000; }
 .pc-title-label {
   color: #00d2ff;            
-  font-size: 13px; /* 15pxから縮小 */          
+  font-size: 15px; /* 13px -> 15px (2pxアップ) */          
   font-weight: bold;
   line-height: 1.2;
   text-align: center;
@@ -356,7 +356,7 @@ input[type="datetime-local"] {
   background: #061f14;      
   border: 1px solid #00ffaa; 
   border-radius: 8px;
-  padding: 6px 10px; /* 8pxから縮小 */
+  padding: 6px 10px; 
   margin-bottom: 6px;
 }
 .shop-nav-btn {
@@ -365,14 +365,14 @@ input[type="datetime-local"] {
   border: 1px solid #00ffaa;
   border-radius: 4px;
   padding: 2px 8px;
-  font-size: 12px;
+  font-size: 13px; /* 12px -> 13px */
   font-weight: bold;
   cursor: pointer;
 }
 .shop-nav-btn:active { background: #00ffaa; color: #000; }
 .shop-title-label {
   color: #00ffaa;            
-  font-size: 13px; /* 15pxから縮小 */          
+  font-size: 15px; /* 13px -> 15px (2pxアップ) */          
   font-weight: bold;
   line-height: 1.2;
   text-align: center;
@@ -391,7 +391,7 @@ input[type="datetime-local"] {
 .speed-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 
-  gap: 4px 4px; /* ギャップを詰める */
+  gap: 4px 4px; 
   text-align: center;
 }
 .speed-cell {
@@ -400,13 +400,13 @@ input[type="datetime-local"] {
   align-items: center;
 }
 .pc-speed-th {
-  font-size: 11px; /* 13pxから縮小 */
+  font-size: 12px; /* 11px -> 12px */
   color: #00d2ff;
   font-weight: normal;
   margin-bottom: 1px;
 }
 .speed-td {
-  font-size: 14px; /* 16pxから縮小 */
+  font-size: 15px; /* 14px -> 15px */
   font-weight: bold;
   color: #ffffff;
 }
@@ -422,11 +422,11 @@ input[type="datetime-local"] {
 .slim-big-card {
   background: #1a1a1a;
   border-radius: 8px;
-  padding: 4px 10px; /* 縦幅縮小 */
+  padding: 4px 10px; 
   margin-top: 2px;
 }
 .big-value {
-  font-size: 28px; /* 38pxから大幅コンパクト化 */
+  font-size: 30px; /* 28px -> 30px (2pxアップ) */
   font-weight: bold;
   text-align: center;
   margin-top: 1px;
@@ -512,7 +512,7 @@ input[type="datetime-local"] {
   <div class="grid">
     <div class="slim-card">
       <div class="title">現在距離</div>
-      <input type="number" id="distance" step="0.1" inputmode="decimal" style="font-size:20px; color:#00ff66; padding: 2px; text-align: center; background: transparent;">
+      <input type="number" id="distance" step="0.1" inputmode="decimal" style="font-size:22px; color:#00ff66; padding: 2px; text-align: center; background: transparent;">
     </div>
     <div class="slim-card">
       <div class="title">現在時間</div>
@@ -533,12 +533,12 @@ input[type="datetime-local"] {
   <div class="card full-width-pc-card" id="pcCard">
     <div class="pc-header-row">
       <button class="pc-nav-btn" id="pcPrevBtn">◀ 前</button>
-      <div id="pcLabel" class="pc-title-label">NEXT: PC-</div>
+      <div id="pcLabel" class="pc-title-label">次: PC-</div>
       <button class="pc-nav-btn" id="pcNextBtn">次 ▶</button>
     </div>
     
     <div class="pc-main-row">
-      <div class="value highlight" id="pcRemainDist" style="font-size:22px; text-align: center; cursor: pointer; padding: 0 15px;">残り -- km</div>
+      <div class="value highlight" id="pcRemainDist" style="font-size:24px; text-align: center; cursor: pointer; padding: 0 15px;">残り -- km</div>
     </div>
     
     <div class="speed-grid">
@@ -555,12 +555,12 @@ input[type="datetime-local"] {
   <div class="card full-width-shop-card" id="shopCard">
     <div class="pc-header-row">
       <button class="shop-nav-btn" id="shopPrevBtn">◀ 前</button>
-      <div id="shopLabel" class="shop-title-label">NEXT休憩: ---</div>
+      <div id="shopLabel" class="shop-title-label">次休憩: ---</div>
       <button class="shop-nav-btn" id="shopNextBtn">次 ▶</button>
     </div>
     
     <div class="shop-main-row">
-      <div class="value green" id="shopRemainDist" style="font-size:22px; text-align: center; cursor: pointer; padding: 0 15px;">残り -- km</div>
+      <div class="value green" id="shopRemainDist" style="font-size:24px; text-align: center; cursor: pointer; padding: 0 15px;">残り -- km</div>
     </div>
   </div>
 
@@ -808,7 +808,7 @@ function updateDisplayOnly() {
   if (globalPCList.length > 0 && pcDisplayIdx !== -1) {
     const selectedPC = globalPCList[pcDisplayIdx];
     const diffDist = selectedPC.dist - currentDist;
-    let prefix = (pcDisplayIdx === pcAutoTrackIdx) ? "NEXT: " : (pcDisplayIdx < pcAutoTrackIdx ? "通過済: " : "先々: ");
+    let prefix = (pcDisplayIdx === pcAutoTrackIdx) ? "次: " : (pcDisplayIdx < pcAutoTrackIdx ? "通過: " : "先々: ");
     
     let rawDist = selectedPC.dist.toFixed(1);
     document.getElementById("pcLabel").innerText = prefix + selectedPC.id + " " + selectedPC.name + "（" + rawDist + "km）";
@@ -823,7 +823,7 @@ function updateDisplayOnly() {
       } else { el.innerText = "--:--"; }
     });
   } else {
-    document.getElementById("pcLabel").innerText = "NEXT: GOAL";
+    document.getElementById("pcLabel").innerText = "次: ゴール";
     pcRemainDist.innerText = "残り 0.0 km";
     ["15","16","17","18","19","20"].forEach(s => document.getElementById("pc_sp" + s).innerText = "--:--");
   }
@@ -831,13 +831,13 @@ function updateDisplayOnly() {
   if (globalShopList.length > 0 && shopDisplayIdx !== -1) {
     const selectedShop = globalShopList[shopDisplayIdx];
     const diffDist = selectedShop.dist - currentDist;
-    let prefix = (shopDisplayIdx === shopAutoTrackIdx) ? "NEXT休憩: " : (shopDisplayIdx < shopAutoTrackIdx ? "通過済休憩: " : "先々休憩: ");
+    let prefix = (shopDisplayIdx === shopAutoTrackIdx) ? "次休憩: " : (shopDisplayIdx < shopAutoTrackIdx ? "通過休憩: " : "先々休憩: ");
     
     let rawDist = selectedShop.dist.toFixed(1);
     document.getElementById("shopLabel").innerText = prefix + selectedShop.name + "（" + rawDist + "km）";
     shopRemainDist.innerText = diffDist >= 0 ? "残り " + diffDist.toFixed(1) + " km" : "通過後 " + Math.abs(diffDist).toFixed(1) + " km";
   } else {
-    document.getElementById("shopLabel").innerText = "NEXT休憩: 登録なし";
+    document.getElementById("shopLabel").innerText = "次休憩: 登録なし";
     shopRemainDist.innerText = "残り -- km";
   }
 }
@@ -1000,15 +1000,15 @@ function update(isDistanceOrInputChanged = false) {
   const gross = currentDist / elapsed;
   const eh = Math.floor(elapsed);
   const em = Math.floor((elapsed - eh) * 60);
-  document.getElementById("elapsed").innerText = eh + "h" + em + "m"; // 表記をスリムに
+  document.getElementById("elapsed").innerText = eh + "時間" + em + "分"; 
 
   const totalRemainTime = limitHours - elapsed;
   if (totalRemainTime > 0) {
     const rth = Math.floor(totalRemainTime);
     const rtm = Math.floor((totalRemainTime - rth) * 60);
-    document.getElementById("remainTime").innerText = rth + "h" + rtm + "m";
+    document.getElementById("remainTime").innerText = rth + "時間" + rtm + "分";
   } else {
-    document.getElementById("remainTime").innerText = "TIMEOUT";
+    document.getElementById("remainTime").innerText = "タイムアウト";
   }
   
   document.getElementById("gross").innerText = gross.toFixed(2) + " km/h";
@@ -1034,7 +1034,7 @@ function update(isDistanceOrInputChanged = false) {
   else if (saving >= 1) { statusIcon = "🟡"; statusClass = "big-value yellow"; }
 
   const savingElement = document.getElementById("saving");
-  savingElement.innerText = statusIcon + " " + savSign + savH + "h" + savM + "m";
+  savingElement.innerText = statusIcon + " " + savSign + savH + "時間" + savM + "分";
   savingElement.className = statusClass;
 }
 
