@@ -73,6 +73,15 @@ input, select, textarea {
   margin-bottom: 4px;
   display: block;
 }
+
+/* 見出しとトグルを横並びにするラッパー */
+.label-toggle-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 textarea {
   width: 100%;
   background: #333;
@@ -125,6 +134,36 @@ textarea {
   margin-top: 8px;
 }
 
+/* トグルスイッチのスタイル（コンパクト化） */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #555;
+  transition: .3s;
+  border-radius: 22px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px; width: 16px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider { background-color: #00aa66; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+
 /* 共通カードスタイル */
 .slim-card {
   background: #1a1a1a;
@@ -134,6 +173,7 @@ textarea {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: padding 0.2s ease;
 }
 .card-center {
   background: #1a1a1a;
@@ -153,6 +193,7 @@ textarea {
   color: #aaa;
   margin-bottom: 1px;
   text-align: center;
+  transition: font-size 0.2s ease;
 }
 
 input, select {
@@ -165,6 +206,9 @@ input, select {
   color: #fff;
   text-align: center;
   text-align-last: center; 
+}
+input[type="number"] {
+  transition: font-size 0.2s ease;
 }
 input[type="datetime-local"] {
   font-size: 13px; 
@@ -185,11 +229,13 @@ input[type="datetime-local"] {
   font-weight: bold;
   color: #00e5ff; 
   text-align: center;
+  transition: font-size 0.2s ease;
 }
 .value {
   font-size: 20px; 
   font-weight: bold;
   text-align: center;
+  transition: font-size 0.2s ease;
 }
 
 /* 進捗グラフエリア */
@@ -314,6 +360,7 @@ input[type="datetime-local"] {
   border-radius: 8px;
   padding: 8px 10px; 
   margin-bottom: 6px;
+  transition: padding 0.2s ease;
 }
 .pc-header-row {
   display: flex;
@@ -340,6 +387,7 @@ input[type="datetime-local"] {
   text-align: center;
   flex: 1;
   padding: 0 4px;
+  transition: font-size 0.2s ease;
 }
 .pc-main-row {
   display: flex;
@@ -409,6 +457,7 @@ input[type="datetime-local"] {
   font-size: 15px; 
   font-weight: bold;
   color: #ffffff;
+  transition: font-size 0.2s ease;
 }
 
 .grid {
@@ -424,6 +473,7 @@ input[type="datetime-local"] {
   border-radius: 8px;
   padding: 4px 10px; 
   margin-top: 2px;
+  transition: padding 0.2s ease;
 }
 .big-value {
   font-size: 30px; 
@@ -432,6 +482,42 @@ input[type="datetime-local"] {
   margin-top: 1px;
   display: block;
   width: 100%;
+  transition: font-size 0.2s ease;
+}
+
+/* --- 【ショップ非表示（OFF）時の拡大用特別クラススタイル】 --- */
+body.shop-off .slim-card {
+  padding: 10px 8px; 
+}
+body.shop-off .title {
+  font-size: 15px; 
+}
+body.shop-off #distance {
+  font-size: 25px !important; 
+}
+body.shop-off .current-time-display {
+  font-size: 25px; 
+}
+body.shop-off .value {
+  font-size: 23px; 
+}
+body.shop-off .full-width-pc-card {
+  padding: 14px 10px; 
+}
+body.shop-off .pc-title-label {
+  font-size: 17px; 
+}
+body.shop-off #pcRemainDist {
+  font-size: 28px !important; 
+}
+body.shop-off .speed-td {
+  font-size: 17px; 
+}
+body.shop-off .slim-big-card {
+  padding: 12px 10px; 
+}
+body.shop-off .big-value {
+  font-size: 36px; 
 }
 
 .footer {
@@ -456,7 +542,6 @@ input[type="datetime-local"] {
     <div class="menu-trigger" id="menuTrigger">☰</div>
   </div>
 
-  <!-- メニューエリア -->
   <div class="menu-content" id="menuContent">
     <div class="menu-top-row">
       <div class="card-center half" style="background: #333;">
@@ -474,18 +559,22 @@ input[type="datetime-local"] {
       </div>
     </div>
 
-    <!-- ２種類の貼り付け用テキストエリア -->
     <div style="margin-bottom: 8px;">
       <label class="menu-label">① 公式PC・通過チェック リスト登録</label>
       <textarea id="pcInput" placeholder="例:&#10;PC1, 御幸橋, 24.9km&#10;PC2, 山城大橋, 68.0km"></textarea>
     </div>
 
-    <div style="margin-bottom: 8px;">
-      <label class="menu-label">② コンビニ・休憩・任意スポット リスト登録</label>
+    <div style="margin-bottom: 8px;" id="menuShopInputWrapper">
+      <div class="label-toggle-wrapper">
+        <label class="menu-label" style="margin-bottom: 0;">② コンビニ・休憩・任意スポット リスト登録</label>
+        <label class="switch">
+          <input type="checkbox" id="shopToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
       <textarea id="shopInput" placeholder="例 (区切りは「,」「、」等。km無しでも自動追加):&#10;ローソン 八幡南店, 32.1&#10;セブン 宇治川店, 50.4"></textarea>
     </div>
 
-    <!-- 名前をつけて保存機能 -->
     <div style="margin-bottom: 8px;">
       <label class="menu-label">現在のリスト一式を保存する</label>
       <div class="menu-input-row">
@@ -494,7 +583,6 @@ input[type="datetime-local"] {
       </div>
     </div>
 
-    <!-- 保存したリストの呼び出し・削除機能 -->
     <div style="margin-bottom: 10px;">
       <label class="menu-label">保存済みリストの呼び出し / 削除</label>
       <div class="menu-input-row">
@@ -508,7 +596,6 @@ input[type="datetime-local"] {
     <button class="btn-reset" id="resetBtn">リセット</button>
   </div>
 
-  <!-- 【メイン画面】一画面表示エリア -->
   <div class="grid">
     <div class="slim-card">
       <div class="title">現在距離</div>
@@ -520,7 +607,6 @@ input[type="datetime-local"] {
     </div>
   </div>
 
-  <!-- 進捗グラフエリア -->
   <div class="progress-section">
     <div class="graph-scale-container" id="graphScale">
       <div class="graph-container">
@@ -529,7 +615,6 @@ input[type="datetime-local"] {
     </div>
   </div>
 
-  <!-- ① PCカード情報 -->
   <div class="card full-width-pc-card" id="pcCard">
     <div class="pc-header-row">
       <button class="pc-nav-btn" id="pcPrevBtn">◀ 前</button>
@@ -551,7 +636,6 @@ input[type="datetime-local"] {
     </div>
   </div>
 
-  <!-- ② コンビニ・休憩用カード情報 -->
   <div class="card full-width-shop-card" id="shopCard">
     <div class="pc-header-row">
       <button class="shop-nav-btn" id="shopPrevBtn">◀ 前</button>
@@ -593,6 +677,9 @@ const shopInput = document.getElementById("shopInput");
 const menuTrigger = document.getElementById("menuTrigger");
 const menuContent = document.getElementById("menuContent");
 const resetBtn = document.getElementById("resetBtn");
+const shopToggle = document.getElementById("shopToggle");
+const shopCard = document.getElementById("shopCard");
+const menuShopInputWrapper = document.getElementById("menuShopInputWrapper");
 
 const pcPrevBtn = document.getElementById("pcPrevBtn");
 const pcNextBtn = document.getElementById("pcNextBtn");
@@ -620,7 +707,7 @@ let globalShopList = [];
 
 let pcDisplayIdx = -1; 
 let pcAutoTrackIdx = -1;        
-let isPcUserNavigating = false; 
+let isPcUserNavNavigation = false; 
 
 let shopDisplayIdx = -1;
 let shopAutoTrackIdx = -1;
@@ -634,13 +721,45 @@ function toHalfWidthAlphaNum(str) {
   }).replace(/[\s ]+/g, '').toUpperCase();
 }
 
+// 読み込み初期設定
 startTime.value = localStorage.getItem("startTime") || "";
 brm.value = localStorage.getItem("brm") || "200,13.5";
 distance.value = localStorage.getItem("distance") || "";
 pcInput.value = localStorage.getItem("pcList3") || defaultPCList;
 shopInput.value = localStorage.getItem("shopList3") || defaultShopList;
 
+// トグルの復元
+const savedToggleState = localStorage.getItem("shopToggleState");
+if (savedToggleState === "false") {
+  shopToggle.checked = false;
+  document.body.classList.add("shop-off");
+  shopCard.style.display = "none";
+  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "none";
+} else {
+  shopToggle.checked = true;
+  document.body.classList.remove("shop-off");
+  shopCard.style.display = "block";
+  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
+}
+
 menuTrigger.addEventListener("click", () => menuContent.classList.toggle("open"));
+
+// トグル切り替え時のアクション
+shopToggle.addEventListener("change", () => {
+  localStorage.setItem("shopToggleState", shopToggle.checked);
+  if (shopToggle.checked) {
+    document.body.classList.remove("shop-off");
+    shopCard.style.display = "block";
+    if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
+  } else {
+    document.body.classList.add("shop-off");
+    shopCard.style.display = "none";
+    if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "none";
+  }
+  const [targetDistance] = brm.value.split(",").map(Number);
+  renderGraphScale(targetDistance);
+  updateDisplayOnly();
+});
 
 distance.addEventListener("focus", () => {
   tempDistanceValue = distance.value; 
@@ -657,7 +776,7 @@ distance.addEventListener("blur", () => {
 pcRemainDist.addEventListener("dblclick", () => {
   if (isPcUserNavigating) {
     isPcUserNavigating = false; 
-    pcDisplayIdx = pcAutoTrackIdx; 
+    pcDisplayIdx = pcAutoTrackIdx; updates;
     update(true);
   }
 });
@@ -828,7 +947,7 @@ function updateDisplayOnly() {
     ["15","16","17","18","19","20"].forEach(s => document.getElementById("pc_sp" + s).innerText = "--:--");
   }
 
-  if (globalShopList.length > 0 && shopDisplayIdx !== -1) {
+  if (shopToggle.checked && globalShopList.length > 0 && shopDisplayIdx !== -1) {
     const selectedShop = globalShopList[shopDisplayIdx];
     const diffDist = selectedShop.dist - currentDist;
     let prefix = (shopDisplayIdx === shopAutoTrackIdx) ? "次休憩: " : (shopDisplayIdx < shopAutoTrackIdx ? "通過休憩: " : "先々休憩: ");
@@ -868,24 +987,26 @@ function renderGraphScale(targetDistance) {
     }
   });
 
-  let lastPctShop = 0;
-  globalShopList.forEach((s, idx) => {
-    if (s.dist < targetDistance) {
-      const pct = (s.dist / targetDistance) * 100;
-      let label = s.id;
-      const isActive = (idx === shopDisplayIdx);
+  if (shopToggle.checked) {
+    let lastPctShop = 0;
+    globalShopList.forEach((s, idx) => {
+      if (s.dist < targetDistance) {
+        const pct = (s.dist / targetDistance) * 100;
+        let label = s.id;
+        const isActive = (idx === shopDisplayIdx);
 
-      let typeClass = "shop-type";
-      if (isActive) typeClass += " active-shop";
+        let typeClass = "shop-type";
+        if (isActive) typeClass += " active-shop";
 
-      if (pct - lastPctShop < 5 && pct > 0 && !isActive) {
-        createScalePoint(pct, "・", typeClass, label, isActive);
-      } else {
-        createScalePoint(pct, label, typeClass, label, isActive);
-        lastPctShop = pct;
+        if (pct - lastPctShop < 5 && pct > 0 && !isActive) {
+          createScalePoint(pct, "・", typeClass, label, isActive);
+        } else {
+          createScalePoint(pct, label, typeClass, label, isActive);
+          lastPctShop = pct;
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function createScalePoint(leftPct, label, className, fullText, isActive) {
@@ -1066,9 +1187,14 @@ resetBtn.addEventListener("click", () => {
     isShopUserNavigating = false;
     menuContent.classList.remove("open");
     
-    // ドロップダウンリストのインデックスを初期選択（0番目）に戻す
     loadSavedListsDropdown();
     savedListsSelect.selectedIndex = 0;
+
+    shopToggle.checked = true;
+    localStorage.setItem("shopToggleState", "true");
+    document.body.classList.remove("shop-off");
+    shopCard.style.display = "block";
+    if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
 
     update(true);
     alert("リセットが完了しました。");
