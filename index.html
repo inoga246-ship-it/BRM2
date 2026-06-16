@@ -301,7 +301,7 @@ input[type="datetime-local"] {
   display: block;
 }
 
-/* 明滅アニメーション（周期を 1.5s から 4.5s に変更して3分の1のスピードに調整） */
+/* 明滅アニメーション */
 @keyframes pulse-pc {
   0% { text-shadow: 0 0 4px #00d2ff; }
   50% { text-shadow: 0 0 10px #00d2ff, 0 0 14px #00d2ff; }
@@ -313,18 +313,18 @@ input[type="datetime-local"] {
   100% { text-shadow: 0 0 4px #00ffaa; }
 }
 
-/* 現在選択・アクティブなチェックポイントの強調定義（点滅を4.5sにスロー化） */
+/* 現在選択・アクティブなチェックポイントの強調定義（点滅周期を 9.0s にスロー化） */
 .scale-point.active-pc {
   font-size: 14px !important; 
   transform: translateX(-50%) scale(1.15);
   z-index: 5;
-  animation: pulse-pc 4.5s infinite;
+  animation: pulse-pc 9s infinite;
 }
 .scale-point.active-shop {
   font-size: 14px !important; 
   transform: translateX(-50%) scale(1.15);
   z-index: 5;
-  animation: pulse-shop 4.5s infinite;
+  animation: pulse-shop 9s infinite;
 }
 
 /* PCチェック用（上・青） */
