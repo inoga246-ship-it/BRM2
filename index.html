@@ -46,13 +46,105 @@ input, select, textarea {
   color: #ffffff; 
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
+/* ヘッダー右側のボタンエリア */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.help-trigger {
+  font-size: 20px;
+  cursor: pointer;
+  color: #00e5ff;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+  padding: 2px 6px;
+}
 .menu-trigger {
   font-size: 22px; 
   cursor: pointer;
   padding: 2px 6px;
   color: #ffffff; 
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-  flex-shrink: 0;
+}
+
+/* マニュアル用モーダル（ポップアップ） */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+.modal-overlay.open {
+  display: flex;
+}
+.modal-content {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #222;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #00e5ff;
+}
+.modal-close-btn {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.modal-body {
+  padding: 16px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #ddd;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+.modal-body h4 {
+  color: #fff;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  border-left: 3px solid #00aa66;
+  padding-left: 6px;
+  font-size: 14px;
+}
+.modal-body ul {
+  padding-left: 18px;
+  margin-bottom: 10px;
+}
+.modal-body blockquote {
+  background: #222;
+  padding: 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  margin: 6px 0;
+  color: #aaa;
+  white-space: pre-wrap;
 }
 
 /* メニューエリア */
@@ -295,7 +387,7 @@ input[type="datetime-local"] {
   pointer-events: none;
 }
 
-/* 明滅アニメーション（9秒周期） */
+/* 明滅アニメーション */
 @keyframes pulse-pc {
   0% { text-shadow: 0 0 4px #00d2ff; }
   50% { text-shadow: 0 0 10px #00d2ff, 0 0 14px #00d2ff; }
@@ -356,7 +448,6 @@ input[type="datetime-local"] {
   flex-direction: column;
   justify-content: space-between;
 }
-/* 最上段：ナビボタンと残り距離数値を横並び */
 .pc-top-nav-row {
   display: flex;
   justify-content: space-between;
@@ -383,7 +474,6 @@ input[type="datetime-local"] {
   cursor: pointer;
   flex: 1;
 }
-/* 下段：チェックポイント名エリア（2行40pxに完全固定） */
 .pc-bottom-title-row {
   width: 100%;
   text-align: center;
@@ -420,7 +510,6 @@ input[type="datetime-local"] {
   flex-direction: column;
   justify-content: space-between;
 }
-/* 最上段：ナビボタンと残り距離数値を横並び */
 .shop-top-nav-row {
   display: flex;
   justify-content: space-between;
@@ -447,7 +536,6 @@ input[type="datetime-local"] {
   cursor: pointer;
   flex: 1;
 }
-/* 下段：店舗名表示エリア（2行40pxに完全固定） */
 .shop-bottom-title-row {
   width: 100%;
   text-align: center;
@@ -551,7 +639,54 @@ body.shop-off .big-value { font-size: 36px; }
 
   <div class="header">
     <div class="header-title">BRM PACE MANAGER</div>
-    <div class="menu-trigger" id="menuTrigger">☰</div>
+    <div class="header-actions">
+      <div class="help-trigger" id="helpTrigger">❓</div>
+      <div class="menu-trigger" id="menuTrigger">☰</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">📖 アプリ使用マニュアル</div>
+        <button class="modal-close-btn" id="modalCloseBtn">閉じる</button>
+      </div>
+      <div class="modal-body">
+        <h4>1. 事前準備 (☰ メニュー)</h4>
+        <ul>
+          <li><strong>BRM設定:</strong> 距離と制限時間枠を選びます。</li>
+          <li><strong>START日時:</strong> ウェーブの出発時刻を正確に入力します。</li>
+          <li><strong>① 公式PCリスト:</strong> 「PC1, 地点名, 距離km」で改行入力。</li>
+          <li><strong>② 休憩スポット:</strong> 「店舗名, 距離」で改行入力します。</li>
+        </ul>
+
+        <h4>2. 走行中の基本操作</h4>
+        <ul>
+          <li><strong>現在距離の更新:</strong> サイコンの積算距離を入力。入力欄タップで一度全クリアされ、打ち替えがスムーズです。</li>
+          <li><strong>目標ペース設計:</strong> PC枠内の15〜20km/h各グロス速度に応じた到着予想時刻を目安に走ります。</li>
+        </ul>
+
+        <h4>3. ナビゲーションとマップ連動</h4>
+        <ul>
+          <li><strong>先行プレビュー:</strong> 各カードの <code>◀ 前</code> <code>次 ▶</code> ボタンで、距離に関係なく先々の地点を自由に確認可能。</li>
+          <li><strong>自動追従へ復帰:</strong> プレビュー中に中央の黄色の距離表示（<code>残り~km</code>）を<strong>ダブルクリック</strong>すると、現在地ベースの「次のスポット」に一発復帰します。</li>
+          <li><strong>Googleマップ検索:</strong> 各カードの「地点名エリア」を<strong>ダブルクリック</strong>すると、その場所をマップで即座にルート検索できます（メニュー内連動ON時のみ）。</li>
+        </ul>
+
+        <h4>4. 表示のカスタマイズ</h4>
+        <ul>
+          <li>メニュー内の「② コンビニ…」右側のトグルをOFFにすると、休憩枠が隠れ、残ったPC情報や最下段の<strong>「貯金時間」が自動で大きく拡大表示</strong>され、夜間も見やすくなります。</li>
+        </ul>
+
+        <h4>5. 各種ステータス</h4>
+        <ul>
+          <li><strong>必要平均:</strong> 制限時間内にゴールする最低グロス速度。15km/hに近づくと危険です。</li>
+          <li><strong>貯金時間:</strong> 制限時間に対する現在のアドバンテージ。
+            <br><span class="green">🟢 2時間以上</span> / <span class="yellow">🟡 1時間以上</span> / <span class="red">🔴 1時間未満（危険）</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <div class="menu-content" id="menuContent">
@@ -705,7 +840,11 @@ const resetBtn = document.getElementById("resetBtn");
 const shopToggle = document.getElementById("shopToggle");
 const mapDblClickToggle = document.getElementById("mapDblClickToggle");
 const shopCard = document.getElementById("shopCard");
-const menuShopInputWrapper = document.getElementById("menuShopInputWrapper");
+
+// ヘルプモーダル関連
+const helpTrigger = document.getElementById("helpTrigger");
+const helpModal = document.getElementById("helpModal");
+const modalCloseBtn = document.getElementById("modalCloseBtn");
 
 const pcPrevBtn = document.getElementById("pcPrevBtn");
 const pcNextBtn = document.getElementById("pcNextBtn");
@@ -775,7 +914,20 @@ if (savedMapDblClickState === "false") {
   mapDblClickToggle.checked = true;
 }
 
+// メニュー・ヘルプ開閉イベント
 menuTrigger.addEventListener("click", () => menuContent.classList.toggle("open"));
+
+helpTrigger.addEventListener("click", () => {
+  helpModal.classList.add("open");
+});
+modalCloseBtn.addEventListener("click", () => {
+  helpModal.classList.remove("open");
+});
+helpModal.addEventListener("click", (e) => {
+  if (e.target === helpModal) {
+    helpModal.classList.remove("open");
+  }
+});
 
 shopToggle.addEventListener("change", () => {
   localStorage.setItem("shopToggleState", shopToggle.checked);
@@ -809,9 +961,6 @@ distance.addEventListener("blur", () => {
   }
 });
 
-/* ========================================================
-   Googleマップ検索処理
-   ======================================================== */
 function searchOnGoogleMap(keyword) {
   if (!mapDblClickToggle.checked) return; 
   if (!keyword || keyword.includes("ゴール") || keyword.includes("登録なし") || keyword.includes("---")) return;
@@ -819,7 +968,6 @@ function searchOnGoogleMap(keyword) {
   window.open(url, '_blank');
 }
 
-// ① PC情報の操作
 pcRemainDist.addEventListener("dblclick", (e) => {
   e.stopPropagation();
   if (isPcUserNavigating) {
@@ -837,7 +985,6 @@ pcTitleRow.addEventListener("dblclick", (e) => {
   }
 });
 
-// ② コンビニ・休憩情報の操作
 shopRemainDist.addEventListener("dblclick", (e) => {
   e.stopPropagation();
   if (isShopUserNavigating) {
