@@ -1274,11 +1274,7 @@ function parseTextList(textData, isPCMode = false) {
     const itemDist = parseFloat(distStr.replace(/[^\d.]/g, ""));
     
     if (!isNaN(itemDist)) {
-      if (isPCMode && columns.length >= 3) {
-        tempResult.push({ rawId: idOrName, name: secondVal, dist: itemDist });
-      } else {
-        tempResult.push({ rawId: idOrName, name: secondVal, dist: itemDist });
-      }
+      tempResult.push({ rawId: idOrName, name: secondVal, dist: itemDist });
     }
   }
   
@@ -1289,14 +1285,11 @@ function parseTextList(textData, isPCMode = false) {
     let finalId = "";
     if (isPCMode) {
       let cleanId = toHalfWidthAlphaNum(item.rawId);
-      // 文字列のどこかに「PC」または「GOAL」「FINISH」が含まれているか判定
       if (cleanId.includes("PC")) {
-        // 全角・スペースブレ対応：含まれる「PC+数字」の部分だけを綺麗に切り出す（例: "通過チェックPC1" -> "PC1"）
         finalId = cleanId.match(/PC\d+/)?.[0] || cleanId; 
       } else if (cleanId.includes("GOAL") || cleanId.includes("FINISH")) {
         finalId = "GOAL";
       } else {
-        // 通過チェック等、PCの文字がない場合は自動で丸数字を割り当て
         finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`;
         genericCounter++;
       }
