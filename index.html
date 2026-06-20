@@ -575,7 +575,7 @@ body.shop-off .big-value { font-size: 36px; }
       <div class="label-toggle-wrapper">
         <label class="menu-label" style="margin-bottom: 0;">① 公式PC・通過チェック リスト登録</label>
         <div style="display: flex; align-items: center; gap: 6px;">
-          <span style="font-size: 11px; color: #aaa;">Wクリック地図連動</span>
+          <span style="font-size: 11px; color: #aaa;">Wクリック地図ルート連動</span>
           <label class="switch">
             <input type="checkbox" id="mapDblClickToggle" checked>
             <span class="slider"></span>
@@ -810,12 +810,13 @@ distance.addEventListener("blur", () => {
 });
 
 /* ========================================================
-   Googleマップ検索処理
+   Googleマップ 現在地からのルート・距離検索処理
    ======================================================== */
 function searchOnGoogleMap(keyword) {
   if (!mapDblClickToggle.checked) return; 
   if (!keyword || keyword.includes("ゴール") || keyword.includes("登録なし") || keyword.includes("---")) return;
-  const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(keyword);
+  // saddr（出発地）を空欄にするとGPS現在地、daddr（目的地）にキーワード、dirflg=dで車線ルート表示
+  const url = "https://www.google.com/maps?saddr=&daddr=" + encodeURIComponent(keyword) + "&dirflg=d";
   window.open(url, '_blank');
 }
 
