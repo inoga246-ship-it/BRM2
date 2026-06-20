@@ -670,7 +670,7 @@ body.shop-off .big-value { font-size: 36px; }
         <ul>
           <li><strong>先行プレビュー:</strong> 各カードの <code>◀ 前</code> <code>次 ▶</code> ボタンで、距離に関係なく先々の地点を自由に確認可能。</li>
           <li><strong>自動追従へ復帰:</strong> プレビュー中に中央の黄色の距離表示（<code>残り~km</code>）を<strong>ダブルクリック</strong>すると、現在地ベースの「次のスポット」に一発復帰します。</li>
-          <li><strong>Googleマップ検索:</strong> 各カードの「地点名エリア」を<strong>ダブルクリック</strong>すると、その場所をマップで即座に検索できます（メニュー内連動ON時のみ）。</li>
+          <li><strong>マップ検索:</strong> 各カードの「地点名エリア」を<strong>ダブルクリック</strong>すると、その場所をマップで即座に検索できます（メニュー内連動ON時のみ）。</li>
         </ul>
 
         <h4>4. 表示のカスタマイズ</h4>
@@ -961,10 +961,25 @@ distance.addEventListener("blur", () => {
   }
 });
 
+// OSに応じたマップアプリ自動起動分岐関数
 function searchOnGoogleMap(keyword) {
   if (!mapDblClickToggle.checked) return; 
   if (!keyword || keyword.includes("ゴール") || keyword.includes("登録なし") || keyword.includes("---")) return;
-  const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(keyword);
+  
+  const userAgent = navigator.userAgent.toLowerCase();
+  let url = "";
+
+  if (/iphone|ipad|ipod/.test(userAgent)) {
+    // iOS環境: Apple純正のマップアプリを起動（アプリ未導入時はWeb版）
+    url = "maps://maps.apple.com/?q=" + encodeURIComponent(keyword);
+  } else if (/android/.test(userAgent)) {
+    // Android環境: Googleマップアプリのインテントを最優先起動（アプリ未導入時はブラウザWeb版）
+    url = "intent://maps.google.com/?q=" + encodeURIComponent(keyword) + "#Intent;scheme=http;package=com.google.android.apps.maps;end";
+  } else {
+    // PC等の環境: 通常のブラウザ表示用URL
+    url = "https://maps.google.com/?q=" + encodeURIComponent(keyword);
+  }
+
   window.open(url, '_blank');
 }
 
@@ -1308,7 +1323,7 @@ function update(isDistanceOrInputChanged = false) {
   const [targetDistance, limitHours] = brm.value.split(",").map(Number);
 
   globalPCList = parseTextList(pcInput.value, true);
-  globalShopList = parseTextList(shopInput.value, false);
+  globalShopList = parseTextList(textData = shopInput.value, isPCMode = false);
 
   let progressPct = (currentDist / targetDistance) * 100;
   if (progressPct < 0) progressPct = 0;
