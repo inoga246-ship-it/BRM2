@@ -652,7 +652,7 @@ body.shop-off .big-value { font-size: 36px; }
         <button class="modal-close-btn" id="modalCloseBtn">閉じる</button>
       </div>
       <div class="modal-body">
-        <h4>1. 事前準備 (☰ メニュー)</h4>
+        <h4>1. 事前準備 (☰ メメニュー)</h4>
         <ul>
           <li><strong>BRM設定:</strong> 距離と制限時間枠を選びます。</li>
           <li><strong>START日時:</strong> ウェーブの出発時刻を正確に入力します。</li>
@@ -904,7 +904,7 @@ if (savedToggleState === "false") {
   shopToggle.checked = true;
   document.body.classList.remove("shop-off");
   shopCard.style.display = "block";
-  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.block = "block";
+  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
 }
 
 const savedMapDblClickState = localStorage.getItem("mapDblClickState");
@@ -1178,7 +1178,7 @@ function updateDisplayOnly() {
     let prefix = (shopDisplayIdx === shopAutoTrackIdx) ? "次休憩: " : (shopDisplayIdx < shopAutoTrackIdx ? "通過休憩: " : "先々休憩: ");
     
     let rawDist = selectedShop.dist.toFixed(1);
-    document.getElementById("shopLabel").innerText = prefix + selectedShop.name + "（" + rawDist + "km）";
+    document.getElementById("shopLabel").innerText = prefix + selectedShop.id + " " + selectedShop.name + "（" + rawDist + "km）";
     shopRemainDist.innerText = diffDist >= 0 ? "残り " + diffDist.toFixed(1) + " km" : "通過後 " + Math.abs(diffDist).toFixed(1) + " km";
   } else {
     document.getElementById("shopLabel").innerText = "次休憩: 登録なし";
@@ -1270,11 +1270,26 @@ function parseTextList(textData, isPCMode = false) {
     
     let idOrName = columns[0];
     let secondVal = columns[1];
-    let distStr = (isPCMode && columns.length >= 3) ? columns[2] : secondVal;
+    let distStr = "";
+    let finalName = "";
+
+    if (isPCMode) {
+      if (columns.length >= 3) {
+        distStr = columns[2];
+        finalName = secondVal;
+      } else {
+        distStr = secondVal;
+        finalName = idOrName;
+      }
+    } else {
+      distStr = secondVal;
+      finalName = idOrName;
+    }
+    
     const itemDist = parseFloat(distStr.replace(/[^\d.]/g, ""));
     
     if (!isNaN(itemDist)) {
-      tempResult.push({ rawId: idOrName, name: secondVal, dist: itemDist });
+      tempResult.push({ rawId: idOrName, name: finalName, dist: itemDist });
     }
   }
   
@@ -1318,7 +1333,7 @@ function update(isDistanceOrInputChanged = false) {
   const [targetDistance, limitHours] = brm.value.split(",").map(Number);
 
   globalPCList = parseTextList(pcInput.value, true);
-  globalShopList = parseTextList(textData = shopInput.value, isPCMode = false);
+  globalShopList = parseTextList(shopInput.value, false);
 
   let progressPct = (currentDist / targetDistance) * 100;
   if (progressPct < 0) progressPct = 0;
