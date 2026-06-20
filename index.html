@@ -562,7 +562,16 @@ body.shop-off .big-value { font-size: 36px; }
     </div>
 
     <div style="margin-bottom: 8px;">
-      <label class="menu-label">① 公式PC・通過チェック リスト登録</label>
+      <div class="label-toggle-wrapper">
+        <label class="menu-label" style="margin-bottom: 0;">① 公式PC・通過チェック リスト登録</label>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 11px; color: #aaa;">Wクリック地図連動</span>
+          <label class="switch">
+            <input type="checkbox" id="mapDblClickToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
       <textarea id="pcInput" placeholder="例:
 PC1, 御幸橋, 24.9km
 PC2, 山城大橋, 68.0km"></textarea>
@@ -684,6 +693,7 @@ const menuTrigger = document.getElementById("menuTrigger");
 const menuContent = document.getElementById("menuContent");
 const resetBtn = document.getElementById("resetBtn");
 const shopToggle = document.getElementById("shopToggle");
+const mapDblClickToggle = document.getElementById("mapDblClickToggle");
 const shopCard = document.getElementById("shopCard");
 const menuShopInputWrapper = document.getElementById("menuShopInputWrapper");
 
@@ -748,6 +758,13 @@ if (savedToggleState === "false") {
   if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
 }
 
+const savedMapDblClickState = localStorage.getItem("mapDblClickState");
+if (savedMapDblClickState === "false") {
+  mapDblClickToggle.checked = false;
+} else {
+  mapDblClickToggle.checked = true;
+}
+
 menuTrigger.addEventListener("click", () => menuContent.classList.toggle("open"));
 
 shopToggle.addEventListener("change", () => {
@@ -766,6 +783,10 @@ shopToggle.addEventListener("change", () => {
   updateDisplayOnly();
 });
 
+mapDblClickToggle.addEventListener("change", () => {
+  localStorage.setItem("mapDblClickState", mapDblClickToggle.checked);
+});
+
 distance.addEventListener("focus", () => {
   tempDistanceValue = distance.value; 
   distance.value = ""; 
@@ -782,16 +803,11 @@ distance.addEventListener("blur", () => {
    Googleマップ検索処理
    ======================================================== */
 function searchOnGoogleMap(keyword) {
+  if (!mapDblClickToggle.checked) return; // スイッチOFFの時は機能無効化
   if (!keyword || keyword.includes("ゴール") || keyword.includes("登録なし") || keyword.includes("---")) return;
   const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(keyword);
   window.open(url, '_blank');
 }
-
-/* ========================================================
-   【ご要望の変更】
-   ・残り距離の「ダブルクリック」で自動追従モードに戻す
-   ・下段チェックポイント名の「ダブルクリック」でGoogleマップを開く
-   ======================================================== */
 
 // ① PC情報の操作
 pcRemainDist.addEventListener("dblclick", (e) => {
@@ -879,8 +895,8 @@ savedListsSelect.addEventListener("change", () => {
     const data = lists[selectedName];
     pcInput.value = data.pc || "";
     shopInput.value = data.shop || "";
-    isPcUserNavigating = false; 
-    isShopUserNavigating = false;
+    isPcNavigating = false; 
+    isShopNavigating = false;
     update(true); 
     alert("「" + selectedName + "」のデータを読み込みました。");
   }
@@ -1247,6 +1263,9 @@ resetBtn.addEventListener("click", () => {
     document.body.classList.remove("shop-off");
     shopCard.style.display = "block";
     if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
+
+    mapDblClickToggle.checked = true;
+    localStorage.setItem("mapDblClickState", "true");
 
     update(true);
     alert("リセットが完了しました。");
