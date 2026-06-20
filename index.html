@@ -134,7 +134,7 @@ textarea {
   margin-top: 8px;
 }
 
-/* トグルスイッチのスタイル（コンパクト化） */
+/* トグルスイッチのスタイル */
 .switch {
   position: relative;
   display: inline-block;
@@ -162,7 +162,6 @@ textarea {
 }
 input:checked + .slider { background-color: #00aa66; }
 input:checked + .slider:before { transform: translateX(20px); }
-
 
 /* 共通カードスタイル */
 .slim-card {
@@ -249,7 +248,7 @@ input[type="datetime-local"] {
 .graph-scale-container {
   position: relative;
   width: 100%;
-  height: 46px; 
+  height: 64px; 
   margin: auto;
 }
 .graph-container {
@@ -259,8 +258,9 @@ input[type="datetime-local"] {
   width: 100%;
   overflow: hidden;
   position: absolute;
-  top: 18px; 
+  top: 27px; 
   left: 0;
+  z-index: 2;
 }
 .graph-bar {
   height: 100%;
@@ -270,7 +270,7 @@ input[type="datetime-local"] {
   transition: width 0.4s ease-out;
 }
 
-/* 動的目盛りスタイル */
+/* 通常時の目盛りスタイル */
 .scale-point {
   font-size: 11px; 
   font-weight: bold;
@@ -278,30 +278,24 @@ input[type="datetime-local"] {
   transform: translateX(-50%);
   text-align: center;
   white-space: nowrap;
-  transition: transform 0.2s ease, font-size 0.2s ease, text-shadow 0.2s ease;
+  z-index: 3;
+  transition: transform 0.2s ease, font-size 0.2s ease, text-shadow 0.2s ease, top 0.15s ease, bottom 0.15s ease;
+  cursor: pointer;
 }
 
-.scale-point[data-full]::after {
-  content: attr(data-full);
+/* 視覚的な縦棒（目盛り線）用の共通擬似要素 */
+.scale-point::after {
+  content: "";
   position: absolute;
-  bottom: 12px;
   left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.85);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  display: none;
-  white-space: nowrap;
-  border: 1px solid #555;
-  z-index: 10;
-}
-.scale-point[data-full]:active::after {
-  display: block;
+  width: 1px;
+  background-color: currentColor;
+  opacity: 0.4;
+  z-index: 1;
+  pointer-events: none;
 }
 
-/* 明滅アニメーション */
+/* 明滅アニメーション（9秒周期） */
 @keyframes pulse-pc {
   0% { text-shadow: 0 0 4px #00d2ff; }
   50% { text-shadow: 0 0 10px #00d2ff, 0 0 14px #00d2ff; }
@@ -313,43 +307,66 @@ input[type="datetime-local"] {
   100% { text-shadow: 0 0 4px #00ffaa; }
 }
 
-/* 現在選択・アクティブなチェックポイントの強調定義（点滅周期を 9.0s にスロー化） */
+/* ========================================================
+   【重要修正】アクティブ（選択）選択時に文字位置を上にずらし、
+   それに連動して線も文字の根元からタイムラインまで綺麗に伸ばす
+   ======================================================== */
+
+/* 1. PC（上段）アクティブ時の文字位置と線の連動 */
 .scale-point.active-pc {
-  font-size: 14px !important; 
-  transform: translateX(-50%) scale(1.15);
+  font-size: 15px !important; 
+  transform: translateX(-50%) scale(1.1);
   z-index: 5;
   animation: pulse-pc 9s infinite;
 }
+/* 選択時に文字位置自体をさらに上空（外側）へ押し上げる */
+.scale-point.active-pc.pc-type-row0 { top: 3px !important; }  /* 10px -> 3px へ上昇 */
+.scale-point.active-pc.pc-type-row1 { top: -6px !important; } /* 1px -> -6px へ上昇 */
+
+/* 文字の移動に伴い、縦棒の開始位置(top)を調整し高さを伸ばして中央バーに接続 */
+.scale-point.active-pc.pc-type-row0::after { top: 16px; height: 18px; opacity: 0.9; width: 1.5px; }
+.scale-point.active-pc.pc-type-row1::after { top: 16px; height: 27px; opacity: 0.9; width: 1.5px; }
+
+
+/* 2. コンビニ（下段）アクティブ時の文字位置と線の連動 */
 .scale-point.active-shop {
-  font-size: 14px !important; 
-  transform: translateX(-50%) scale(1.15);
+  font-size: 15px !important; 
+  transform: translateX(-50%) scale(1.1);
   z-index: 5;
   animation: pulse-shop 9s infinite;
 }
+/* 選択時に文字位置自体をさらに下空（外側）へ押し下げる */
+.scale-point.active-shop.shop-type-row0 { bottom: 3px !important; }  /* 10px -> 3px へ下降 */
+.scale-point.active-shop.shop-type-row1 { bottom: -6px !important; } /* 1px -> -6px へ下降 */
 
-/* PCチェック用（上・青） */
+/* 文字の移動に伴い、縦棒の開始位置(bottom)を調整し高さを伸ばして中央バーに接続 */
+.scale-point.active-shop.shop-type-row0::after { bottom: 16px; height: 18px; opacity: 0.9; width: 1.5px; }
+.scale-point.active-shop.shop-type-row1::after { bottom: 16px; height: 27px; opacity: 0.9; width: 1.5px; }
+
+
+/* --- 通常時の位置定義（ベースライン） --- */
+/* PCチェック用（上・青）通常配置 */
 .scale-point.pc-type {
-  top: 1px;
   color: #00d2ff;
 }
-.scale-point.pc-type::before {
-  content: ""; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 1px; height: 3px; background-color: #00d2ff;
-}
-/* コミビニ・休憩用（下・緑） */
+.scale-point.pc-type-row0::after { top: 13px; height: 14px; } 
+.scale-point.pc-type-row1::after { top: 13px; height: 23px; } 
+
+/* コンビニ・休憩用（下・緑）通常配置 */
 .scale-point.shop-type {
-  bottom: 1px;
   color: #00ffaa;
 }
-.scale-point.shop-type::before {
-  content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 1px; height: 3px; background-color: #00ffaa;
-}
+.scale-point.shop-type-row0::after { bottom: 13px; height: 14px; } 
+.scale-point.shop-type-row1::after { bottom: 13px; height: 23px; } 
+
 /* START/GOAL（白） */
 .scale-point.neutral-type {
-  top: 1px;
+  top: 10px;
   color: #ffffff;
 }
-.scale-point.neutral-type::before {
-  content: ""; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 1px; height: 3px; background-color: #ffffff;
+.scale-point.neutral-type::after {
+  top: 13px;
+  height: 14px;
 }
 
 /* 【PC専用】情報枠スタイル（青） */
@@ -360,6 +377,10 @@ input[type="datetime-local"] {
   border-radius: 8px;
   padding: 8px 10px; 
   margin-bottom: 6px;
+  min-height: 144px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   transition: padding 0.2s ease;
 }
 .pc-header-row {
@@ -367,6 +388,7 @@ input[type="datetime-local"] {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2px;
+  min-height: 38px; 
 }
 .pc-nav-btn {
   background: #113355;
@@ -377,6 +399,7 @@ input[type="datetime-local"] {
   font-size: 13px; 
   font-weight: bold;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .pc-nav-btn:active { background: #00d2ff; color: #000; }
 .pc-title-label {
@@ -388,6 +411,7 @@ input[type="datetime-local"] {
   flex: 1;
   padding: 0 4px;
   transition: font-size 0.2s ease;
+  word-break: break-all; 
 }
 .pc-main-row {
   display: flex;
@@ -404,8 +428,19 @@ input[type="datetime-local"] {
   background: #061f14;      
   border: 1px solid #00ffaa; 
   border-radius: 8px;
-  padding: 6px 10px; 
+  padding: 8px 10px; 
   margin-bottom: 6px;
+  min-height: 110px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.shop-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+  min-height: 38px; 
 }
 .shop-nav-btn {
   background: #0d3824;
@@ -416,6 +451,7 @@ input[type="datetime-local"] {
   font-size: 13px; 
   font-weight: bold;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .shop-nav-btn:active { background: #00ffaa; color: #000; }
 .shop-title-label {
@@ -426,6 +462,7 @@ input[type="datetime-local"] {
   text-align: center;
   flex: 1;
   padding: 0 4px;
+  word-break: break-all;
 }
 .shop-main-row {
   display: flex;
@@ -485,40 +522,19 @@ input[type="datetime-local"] {
   transition: font-size 0.2s ease;
 }
 
-/* --- 【ショップ非表示（OFF）時の拡大用特別クラススタイル】 --- */
-body.shop-off .slim-card {
-  padding: 10px 8px; 
-}
-body.shop-off .title {
-  font-size: 15px; 
-}
-body.shop-off #distance {
-  font-size: 25px !important; 
-}
-body.shop-off .current-time-display {
-  font-size: 25px; 
-}
-body.shop-off .value {
-  font-size: 23px; 
-}
-body.shop-off .full-width-pc-card {
-  padding: 14px 10px; 
-}
-body.shop-off .pc-title-label {
-  font-size: 17px; 
-}
-body.shop-off #pcRemainDist {
-  font-size: 28px !important; 
-}
-body.shop-off .speed-td {
-  font-size: 17px; 
-}
-body.shop-off .slim-big-card {
-  padding: 12px 10px; 
-}
-body.shop-off .big-value {
-  font-size: 36px; 
-}
+/* ショップ非表示（OFF）時の拡大用スタイル */
+body.shop-off .slim-card { padding: 10px 8px; }
+body.shop-off .title { font-size: 15px; }
+body.shop-off #distance { font-size: 25px !important; }
+body.shop-off .current-time-display { font-size: 25px; }
+body.shop-off .value { font-size: 23px; }
+body.shop-off .full-width-pc-card { padding: 14px 10px; min-height: 170px; }
+body.shop-off .pc-title-label { font-size: 17px; }
+body.shop-off .pc-header-row { min-height: 44px; }
+body.shop-off #pcRemainDist { font-size: 28px !important; }
+body.shop-off .speed-td { font-size: 17px; }
+body.shop-off .slim-big-card { padding: 12px 10px; }
+body.shop-off .big-value { font-size: 36px; }
 
 .footer {
   margin-top: 15px;
@@ -572,7 +588,7 @@ body.shop-off .big-value {
           <span class="slider"></span>
         </label>
       </div>
-      <textarea id="shopInput" placeholder="例 (区切りは「,」「、」等。km無しでも自動追加):&#10;ローソン 八幡南店, 32.1&#10;セブン 宇治川店, 50.4"></textarea>
+      <textarea id="shopInput" placeholder="例:&#10;ローソン 八幡南店, 32.1&#10;セブン 宇治川店, 50.4"></textarea>
     </div>
 
     <div style="margin-bottom: 8px;">
@@ -637,7 +653,7 @@ body.shop-off .big-value {
   </div>
 
   <div class="card full-width-shop-card" id="shopCard">
-    <div class="pc-header-row">
+    <div class="shop-header-row">
       <button class="shop-nav-btn" id="shopPrevBtn">◀ 前</button>
       <div id="shopLabel" class="shop-title-label">次休憩: ---</div>
       <button class="shop-nav-btn" id="shopNextBtn">次 ▶</button>
@@ -693,7 +709,7 @@ const graphBar = document.getElementById("graphBar");
 const graphScale = document.getElementById("graphScale");
 
 const saveName = document.getElementById("saveName");
-const saveBtn = document.getElementById("saveBtn");
+const saveBtn = document.button = document.getElementById("saveBtn");
 const savedListsSelect = document.getElementById("savedListsSelect");
 const deleteBtn = document.getElementById("deleteBtn");
 
@@ -721,14 +737,12 @@ function toHalfWidthAlphaNum(str) {
   }).replace(/[\s ]+/g, '').toUpperCase();
 }
 
-// 読み込み初期設定
 startTime.value = localStorage.getItem("startTime") || "";
 brm.value = localStorage.getItem("brm") || "200,13.5";
 distance.value = localStorage.getItem("distance") || "";
 pcInput.value = localStorage.getItem("pcList3") || defaultPCList;
 shopInput.value = localStorage.getItem("shopList3") || defaultShopList;
 
-// トグルの復元
 const savedToggleState = localStorage.getItem("shopToggleState");
 if (savedToggleState === "false") {
   shopToggle.checked = false;
@@ -744,7 +758,6 @@ if (savedToggleState === "false") {
 
 menuTrigger.addEventListener("click", () => menuContent.classList.toggle("open"));
 
-// トグル切り替え時のアクション
 shopToggle.addEventListener("change", () => {
   localStorage.setItem("shopToggleState", shopToggle.checked);
   if (shopToggle.checked) {
@@ -965,61 +978,76 @@ function renderGraphScale(targetDistance) {
   const items = graphScale.querySelectorAll(".scale-point");
   items.forEach(el => el.remove());
 
-  createScalePoint(0, "START", "neutral-type", "START", false);
-  createScalePoint(100, "GOAL", "neutral-type", "GOAL", false);
+  // START/GOAL
+  createScalePoint(0, "START", "neutral-type", "10px", null);
+  createScalePoint(100, "GOAL", "neutral-type", "10px", null);
 
-  let lastPctPC = 0;
+  // ① PC・通過チェックのレンダリング
+  let lastPctPC = -999;
+  let useUpperRowPC = false;
+
   globalPCList.forEach((p, idx) => {
     if (p.dist < targetDistance) {
       const pct = (p.dist / targetDistance) * 100;
-      let label = p.id;
+      let label = String(p.id).split(/[\s,，、]/)[0];
+      if (label.length > 6) { label = label.substring(0, 4); }
+
       const isActive = (idx === pcDisplayIdx); 
       
-      let typeClass = "pc-type";
-      if (isActive) typeClass += " active-pc";
-
-      if (pct - lastPctPC < 5 && pct > 0 && !isActive) {
-        createScalePoint(pct, "・", typeClass, label, isActive);
+      if (pct - lastPctPC < 4.5) {
+        useUpperRowPC = !useUpperRowPC;
       } else {
-        createScalePoint(pct, label, typeClass, label, isActive);
-        lastPctPC = pct;
+        useUpperRowPC = false;
       }
+
+      let typeClass = "pc-type " + (useUpperRowPC ? "pc-type-row1" : "pc-type-row0");
+      if (isActive) typeClass += " active-pc";
+      
+      let topPos = useUpperRowPC ? "1px" : "10px";
+      createScalePoint(pct, label, typeClass, topPos, null);
+      
+      lastPctPC = pct;
     }
   });
 
+  // ② コンビニ・休憩のレンダリング
   if (shopToggle.checked) {
-    let lastPctShop = 0;
+    let lastPctShop = -999;
+    let useLowerRowShop = false;
+
     globalShopList.forEach((s, idx) => {
       if (s.dist < targetDistance) {
         const pct = (s.dist / targetDistance) * 100;
-        let label = s.id;
+        let label = String(s.id).split(/[\s,，、]/)[0];
+        if (label.length > 6) { label = label.substring(0, 4); }
+
         const isActive = (idx === shopDisplayIdx);
 
-        let typeClass = "shop-type";
+        if (pct - lastPctShop < 4.5) {
+          useLowerRowShop = !useLowerRowShop;
+        } else {
+          useLowerRowShop = false;
+        }
+
+        let typeClass = "shop-type " + (useLowerRowShop ? "shop-type-row1" : "shop-type-row0");
         if (isActive) typeClass += " active-shop";
 
-        if (pct - lastPctShop < 5 && pct > 0 && !isActive) {
-          createScalePoint(pct, "・", typeClass, label, isActive);
-        } else {
-          createScalePoint(pct, label, typeClass, label, isActive);
-          lastPctShop = pct;
-        }
+        let bottomPos = useLowerRowShop ? "1px" : "10px";
+        createScalePoint(pct, label, typeClass, null, bottomPos);
+
+        lastPctShop = pct;
       }
     });
   }
 }
 
-function createScalePoint(leftPct, label, className, fullText, isActive) {
+function createScalePoint(leftPct, label, className, topStyle, bottomStyle) {
   const div = document.createElement("div");
   div.className = "scale-point " + className;
   div.style.left = leftPct + "%";
   div.innerText = label;
-  if (isActive && fullText) {
-    div.innerText = fullText;
-  }
-  if (label === "・" && fullText) {
-    div.setAttribute("data-full", fullText);
-  }
+  if (topStyle !== null) div.style.top = topStyle;
+  if (bottomStyle !== null) div.style.bottom = bottomStyle;
   graphScale.appendChild(div);
 }
 
@@ -1055,11 +1083,11 @@ function parseTextList(textData, isPCMode = false) {
       if (cleanId.startsWith("PC")) {
         finalId = cleanId; 
       } else {
-        finalId = circleNumbers[genericCounter] || `(${genericCounter + 1})`;
+        finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`;
         genericCounter++;
       }
     } else {
-      finalId = circleNumbers[genericCounter] || `(${genericCounter + 1})`;
+      finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`;
       genericCounter++;
     }
     return { id: finalId, name: item.name, dist: item.dist };
