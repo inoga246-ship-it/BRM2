@@ -904,7 +904,7 @@ if (savedToggleState === "false") {
   shopToggle.checked = true;
   document.body.classList.remove("shop-off");
   shopCard.style.display = "block";
-  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
+  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.block = "block";
 }
 
 const savedMapDblClickState = localStorage.getItem("mapDblClickState");
@@ -970,13 +970,10 @@ function searchOnGoogleMap(keyword) {
   let url = "";
 
   if (/iphone|ipad|ipod/.test(userAgent)) {
-    // iOS環境: Apple純正のマップアプリを起動（アプリ未導入時はWeb版）
     url = "maps://maps.apple.com/?q=" + encodeURIComponent(keyword);
   } else if (/android/.test(userAgent)) {
-    // Android環境: Googleマップアプリのインテントを最優先起動（アプリ未導入時はブラウザWeb版）
     url = "intent://maps.google.com/?q=" + encodeURIComponent(keyword) + "#Intent;scheme=http;package=com.google.android.apps.maps;end";
   } else {
-    // PC等の環境: 通常のブラウザ表示用URL
     url = "https://maps.google.com/?q=" + encodeURIComponent(keyword);
   }
 
@@ -1280,7 +1277,7 @@ function parseTextList(textData, isPCMode = false) {
       if (isPCMode && columns.length >= 3) {
         tempResult.push({ rawId: idOrName, name: secondVal, dist: itemDist });
       } else {
-        tempResult.push({ rawId: "", name: idOrName, dist: itemDist });
+        tempResult.push({ rawId: idOrName, name: secondVal, dist: itemDist });
       }
     }
   }
@@ -1292,9 +1289,14 @@ function parseTextList(textData, isPCMode = false) {
     let finalId = "";
     if (isPCMode) {
       let cleanId = toHalfWidthAlphaNum(item.rawId);
-      if (cleanId.startsWith("PC")) {
-        finalId = cleanId; 
+      // 文字列のどこかに「PC」または「GOAL」「FINISH」が含まれているか判定
+      if (cleanId.includes("PC")) {
+        // 全角・スペースブレ対応：含まれる「PC+数字」の部分だけを綺麗に切り出す（例: "通過チェックPC1" -> "PC1"）
+        finalId = cleanId.match(/PC\d+/)?.[0] || cleanId; 
+      } else if (cleanId.includes("GOAL") || cleanId.includes("FINISH")) {
+        finalId = "GOAL";
       } else {
+        // 通過チェック等、PCの文字がない場合は自動で丸数字を割り当て
         finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`;
         genericCounter++;
       }
