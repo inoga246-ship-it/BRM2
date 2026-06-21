@@ -37,6 +37,8 @@ input, select, textarea {
   padding: 4px 6px 8px 6px; 
   border-bottom: 1px solid #222; 
   margin-bottom: 6px;
+  position: relative;
+  z-index: 110; /* メニューボタンをオーバーレイより上にするため */
 }
 .header-title {
   font-family: 'Arial Black', Impact, sans-serif; 
@@ -46,7 +48,6 @@ input, select, textarea {
   color: #ffffff; 
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
-/* ヘッダー右側のボタンエリア */
 .header-actions {
   display: flex;
   align-items: center;
@@ -68,13 +69,13 @@ input, select, textarea {
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
-/* マニュアル用モーダル（ポップアップ） */
+/* マニュアル用モーダル */
 .modal-overlay {
   display: none;
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.85);
-  z-index: 100;
+  z-index: 120;
   justify-content: center;
   align-items: center;
   padding: 16px;
@@ -121,8 +122,6 @@ input, select, textarea {
   font-size: 13px;
   line-height: 1.6;
   color: #ddd;
-  user-select: text !important;
-  -webkit-user-select: text !important;
 }
 .modal-body h4 {
   color: #fff;
@@ -136,56 +135,69 @@ input, select, textarea {
   padding-left: 18px;
   margin-bottom: 10px;
 }
-.modal-body blockquote {
-  background: #222;
-  padding: 8px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 12px;
-  margin: 6px 0;
-  color: #aaa;
-  white-space: pre-wrap;
-}
 
-/* メニューエリア */
-.menu-content {
+/* ★メニューエリア（全画面オーバーレイ化） */
+.menu-overlay {
   display: none;
-  background: #222;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 8px;
-  border: 1px solid #444;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95); /* 元の画面がほぼ見えなくなるように暗く */
+  z-index: 100;
+  overflow-y: auto;
+  padding: 60px 12px 20px 12px; /* ヘッダーのボタンと被らないよう上部を開ける */
 }
-.menu-content.open {
+.menu-overlay.open {
   display: block;
 }
+.menu-wrapper {
+  max-width: 500px;
+  margin: auto;
+  background: #151515;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #333;
+}
+.menu-close-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.menu-ui-close-btn {
+  background: #333;
+  color: #ccc;
+  border: 1px solid #444;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 .menu-label {
   font-size: 14px; 
   color: #aaa;
   margin-bottom: 4px;
   display: block;
 }
-
-/* 見出しとトグルを横並びにするラッパー */
 .label-toggle-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 4px;
 }
-
 textarea {
   width: 100%;
-  background: #333;
+  background: #252525;
   color: #fff;
-  border: 1px solid #555;
+  border: 1px solid #444;
   padding: 6px;
   font-size: 13px; 
   border-radius: 4px;
   height: 80px;
   resize: none;
 }
-
 .menu-input-row {
   display: flex;
   gap: 6px;
@@ -223,10 +235,10 @@ textarea {
   font-size: 15px; 
   font-weight: bold;
   border-radius: 6px;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
-/* トグルスイッチのスタイル */
+/* トグルスイッチ */
 .switch {
   position: relative;
   display: inline-block;
@@ -255,7 +267,7 @@ textarea {
 input:checked + .slider { background-color: #00aa66; }
 input:checked + .slider:before { transform: translateX(20px); }
 
-/* 共通カードスタイル */
+/* カードスタイル */
 .slim-card {
   background: #1a1a1a;
   border-radius: 8px;
@@ -286,7 +298,6 @@ input:checked + .slider:before { transform: translateX(20px); }
   text-align: center;
   transition: font-size 0.2s ease;
 }
-
 input, select {
   width: 100%;
   padding: 6px; 
@@ -305,7 +316,6 @@ input[type="datetime-local"] {
   font-size: 13px; 
   padding: 7px 4px;
 }
-
 .menu-top-row {
   display: flex;
   gap: 6px;
@@ -314,7 +324,6 @@ input[type="datetime-local"] {
 .half {
   flex: 1;
 }
-
 .current-time-display {
   font-size: 22px; 
   font-weight: bold;
@@ -329,7 +338,7 @@ input[type="datetime-local"] {
   transition: font-size 0.2s ease;
 }
 
-/* 進捗グラフエリア */
+/* 進捗グラフ */
 .progress-section {
   background: #111;
   border-radius: 8px;
@@ -361,8 +370,6 @@ input[type="datetime-local"] {
   border-radius: 4px;
   transition: width 0.4s ease-out;
 }
-
-/* 通常時の目盛りスタイル */
 .scale-point {
   font-size: 11px; 
   font-weight: bold;
@@ -374,8 +381,6 @@ input[type="datetime-local"] {
   transition: transform 0.2s ease, font-size 0.2s ease, text-shadow 0.2s ease, top 0.15s ease, bottom 0.15s ease;
   cursor: pointer;
 }
-
-/* 視覚的な縦棒（目盛り線）用の共通擬似要素 */
 .scale-point::after {
   content: "";
   position: absolute;
@@ -387,7 +392,6 @@ input[type="datetime-local"] {
   pointer-events: none;
 }
 
-/* 明滅アニメーション */
 @keyframes pulse-pc {
   0% { text-shadow: 0 0 4px #00d2ff; }
   50% { text-shadow: 0 0 10px #00d2ff, 0 0 14px #00d2ff; }
@@ -399,7 +403,6 @@ input[type="datetime-local"] {
   100% { text-shadow: 0 0 4px #00ffaa; }
 }
 
-/* アクティブ（選択）時の文字位置と線の連動 */
 .scale-point.active-pc {
   font-size: 15px !important; 
   transform: translateX(-50%) scale(1.1);
@@ -422,7 +425,6 @@ input[type="datetime-local"] {
 .scale-point.active-shop.shop-type-row0::after { bottom: 16px; height: 18px; opacity: 0.9; width: 1.5px; }
 .scale-point.active-shop.shop-type-row1::after { bottom: 16px; height: 27px; opacity: 0.9; width: 1.5px; }
 
-/* 通常時の位置定義（ベースライン） */
 .scale-point.pc-type { color: #00d2ff; }
 .scale-point.pc-type-row0::after { top: 13px; height: 14px; } 
 .scale-point.pc-type-row1::after { top: 13px; height: 23px; } 
@@ -434,8 +436,7 @@ input[type="datetime-local"] {
 .scale-point.neutral-type { top: 10px; color: #ffffff; }
 .scale-point.neutral-type::after { top: 13px; height: 14px; }
 
-
-/* ① PC専用情報枠（青） */
+/* ① PC専用情報枠 */
 .full-width-pc-card {
   width: 100%;
   background: #0a192f;      
@@ -496,8 +497,7 @@ input[type="datetime-local"] {
   overflow-wrap: anywhere;
 }
 
-
-/* ② コンビニ・休憩専用情報枠（緑） */
+/* ② コンビニ・休憩専用情報枠 */
 .full-width-shop-card {
   width: 100%;
   background: #061f14;      
@@ -556,8 +556,7 @@ input[type="datetime-local"] {
   overflow-wrap: anywhere;
 }
 
-
-/* 速度表示共通グリッド */
+/* 速度表示グリッド */
 .speed-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 
@@ -607,7 +606,7 @@ input[type="datetime-local"] {
   transition: font-size 0.2s ease;
 }
 
-/* ショップ非表示（OFF）時の拡大用スタイル */
+/* ショップ非表示時の拡大スタイル */
 body.shop-off .slim-card { padding: 10px 8px; }
 body.shop-off .title { font-size: 15px; }
 body.shop-off #distance { font-size: 25px !important; }
@@ -652,7 +651,7 @@ body.shop-off .big-value { font-size: 36px; }
         <button class="modal-close-btn" id="modalCloseBtn">閉じる</button>
       </div>
       <div class="modal-body">
-        <h4>1. 事前準備 (☰ メメニュー)</h4>
+        <h4>1. 事前準備 (☰ メニュー)</h4>
         <ul>
           <li><strong>BRM設定:</strong> 距離と制限時間枠を選びます。</li>
           <li><strong>START日時:</strong> ウェーブの出発時刻を正確に入力します。</li>
@@ -689,71 +688,77 @@ body.shop-off .big-value { font-size: 36px; }
     </div>
   </div>
 
-  <div class="menu-content" id="menuContent">
-    <div class="menu-top-row">
-      <div class="card-center half" style="background: #333;">
-        <label class="label-center" style="color: #fff;">BRM設定</label>
-        <select id="brm" style="background: #222;">
-          <option value="200,13.5">200km (13.5h)</option>
-          <option value="300,20">300km (20h)</option>
-          <option value="400,27">400km (27h)</option>
-          <option value="600,40">600km (40h)</option>
-        </select>
+  <div class="menu-overlay" id="menuOverlay">
+    <div class="menu-wrapper" id="menuWrapper">
+      <div class="menu-close-row">
+        <button class="menu-ui-close-btn" id="menuUiCloseBtn">閉じる ×</button>
       </div>
-      <div class="card-center half" style="background: #333;">
-        <label class="label-center" style="color: #fff;">START日時</label>
-        <input type="datetime-local" id="startTime" style="background: #222;">
-      </div>
-    </div>
 
-    <div style="margin-bottom: 8px;">
-      <div class="label-toggle-wrapper">
-        <label class="menu-label" style="margin-bottom: 0;">① 公式PC・通過チェック リスト登録</label>
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span style="font-size: 11px; color: #aaa;">Wクリック地図連動</span>
+      <div class="menu-top-row">
+        <div class="card-center half" style="background: #333;">
+          <label class="label-center" style="color: #fff;">BRM設定</label>
+          <select id="brm" style="background: #222;">
+            <option value="200,13.5">200km (13.5h)</option>
+            <option value="300,20">300km (20h)</option>
+            <option value="400,27">400km (27h)</option>
+            <option value="600,40">600km (40h)</option>
+          </select>
+        </div>
+        <div class="card-center half" style="background: #333;">
+          <label class="label-center" style="color: #fff;">START日時</label>
+          <input type="datetime-local" id="startTime" style="background: #222;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 8px;">
+        <div class="label-toggle-wrapper">
+          <label class="menu-label" style="margin-bottom: 0;">① 公式PC・通過チェック リスト登録</label>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 11px; color: #aaa;">Wクリック地図連動</span>
+            <label class="switch">
+              <input type="checkbox" id="mapDblClickToggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+        <textarea id="pcInput" placeholder="例:
+PC1, 御幸橋, 24.9km
+PC2, 山城大橋, 68.0km"></textarea>
+      </div>
+
+      <div style="margin-bottom: 8px;" id="menuShopInputWrapper">
+        <div class="label-toggle-wrapper">
+          <label class="menu-label" style="margin-bottom: 0;">② コンビニ・休憩・任意スポット リスト登録</label>
           <label class="switch">
-            <input type="checkbox" id="mapDblClickToggle" checked>
+            <input type="checkbox" id="shopToggle" checked>
             <span class="slider"></span>
           </label>
         </div>
-      </div>
-      <textarea id="pcInput" placeholder="例:
-PC1, 御幸橋, 24.9km
-PC2, 山城大橋, 68.0km"></textarea>
-    </div>
-
-    <div style="margin-bottom: 8px;" id="menuShopInputWrapper">
-      <div class="label-toggle-wrapper">
-        <label class="menu-label" style="margin-bottom: 0;">② コンビニ・休憩・任意スポット リスト登録</label>
-        <label class="switch">
-          <input type="checkbox" id="shopToggle" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-      <textarea id="shopInput" placeholder="例:
+        <textarea id="shopInput" placeholder="例:
 ローソン 八幡南店, 32.1
 セブン 宇治川店, 50.4"></textarea>
-    </div>
-
-    <div style="margin-bottom: 8px;">
-      <label class="menu-label">現在のリスト一式を保存する</label>
-      <div class="menu-input-row">
-        <input type="text" id="saveName" placeholder="例: BRM315泉佐野" style="font-size:13px; padding:5px; text-align:left;">
-        <button class="btn-save" id="saveBtn">保存</button>
       </div>
-    </div>
 
-    <div style="margin-bottom: 10px;">
-      <label class="menu-label">保存済みリストの呼び出し / 削除</label>
-      <div class="menu-input-row">
-        <select id="savedListsSelect" style="font-size:13px; padding:5px; text-align:left; text-align-last:left;">
-          <option value="">-- 保存データがありません --</option>
-        </select>
-        <button class="btn-delete" id="deleteBtn">削除</button>
+      <div style="margin-bottom: 8px;">
+        <label class="menu-label">現在のリスト一式を保存する</label>
+        <div class="menu-input-row">
+          <input type="text" id="saveName" placeholder="例: BRM315泉佐野" style="font-size:13px; padding:5px; text-align:left;">
+          <button class="btn-save" id="saveBtn">保存</button>
+        </div>
       </div>
-    </div>
 
-    <button class="btn-reset" id="resetBtn">リセット</button>
+      <div style="margin-bottom: 10px;">
+        <label class="menu-label">保存済みリストの呼び出し / 削除</label>
+        <div class="menu-input-row">
+          <select id="savedListsSelect" style="font-size:13px; padding:5px; text-align:left; text-align-last:left;">
+            <option value="">-- 保存データがありません --</option>
+          </select>
+          <button class="btn-delete" id="deleteBtn">削除</button>
+        </div>
+      </div>
+
+      <button class="btn-reset" id="resetBtn">リセット</button>
+    </div>
   </div>
 
   <div class="grid">
@@ -835,13 +840,14 @@ const distance = document.getElementById("distance");
 const pcInput = document.getElementById("pcInput");
 const shopInput = document.getElementById("shopInput");
 const menuTrigger = document.getElementById("menuTrigger");
-const menuContent = document.getElementById("menuContent");
+const menuOverlay = document.getElementById("menuOverlay");
+const menuWrapper = document.getElementById("menuWrapper");
+const menuUiCloseBtn = document.getElementById("menuUiCloseBtn");
 const resetBtn = document.getElementById("resetBtn");
 const shopToggle = document.getElementById("shopToggle");
 const mapDblClickToggle = document.getElementById("mapDblClickToggle");
 const shopCard = document.getElementById("shopCard");
 
-// ヘルプモーダル関連
 const helpTrigger = document.getElementById("helpTrigger");
 const helpModal = document.getElementById("helpModal");
 const modalCloseBtn = document.getElementById("modalCloseBtn");
@@ -899,12 +905,10 @@ if (savedToggleState === "false") {
   shopToggle.checked = false;
   document.body.classList.add("shop-off");
   shopCard.style.display = "none";
-  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "none";
 } else {
   shopToggle.checked = true;
   document.body.classList.remove("shop-off");
   shopCard.style.display = "block";
-  if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
 }
 
 const savedMapDblClickState = localStorage.getItem("mapDblClickState");
@@ -914,19 +918,32 @@ if (savedMapDblClickState === "false") {
   mapDblClickToggle.checked = true;
 }
 
-// メニュー・ヘルプ開閉イベント
-menuTrigger.addEventListener("click", () => menuContent.classList.toggle("open"));
+// ★メニューのトグル開閉処理と画面外クリック処理
+menuTrigger.addEventListener("click", (e) => {
+  e.stopPropagation();
+  menuOverlay.classList.toggle("open");
+});
 
-helpTrigger.addEventListener("click", () => {
-  helpModal.classList.add("open");
+menuUiCloseBtn.addEventListener("click", () => {
+  menuOverlay.classList.remove("open");
 });
-modalCloseBtn.addEventListener("click", () => {
-  helpModal.classList.remove("open");
-});
-helpModal.addEventListener("click", (e) => {
-  if (e.target === helpModal) {
-    helpModal.classList.remove("open");
+
+// メニュー枠の外（背景の薄暗い部分）を押した時に閉じる処理
+menuOverlay.addEventListener("click", (e) => {
+  if (e.target === menuOverlay) {
+    menuOverlay.classList.remove("open");
   }
+});
+
+// メニュー枠自体の中をクリックした時はイベントが透過して閉じないようにする
+menuWrapper.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
+
+helpTrigger.addEventListener("click", () => { helpModal.classList.add("open"); });
+modalCloseBtn.addEventListener("click", () => { helpModal.classList.remove("open"); });
+helpModal.addEventListener("click", (e) => {
+  if (e.target === helpModal) { helpModal.classList.remove("open"); }
 });
 
 shopToggle.addEventListener("change", () => {
@@ -934,11 +951,9 @@ shopToggle.addEventListener("change", () => {
   if (shopToggle.checked) {
     document.body.classList.remove("shop-off");
     shopCard.style.display = "block";
-    if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
   } else {
     document.body.classList.add("shop-off");
     shopCard.style.display = "none";
-    if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "none";
   }
   const [targetDistance] = brm.value.split(",").map(Number);
   renderGraphScale(targetDistance);
@@ -961,7 +976,6 @@ distance.addEventListener("blur", () => {
   }
 });
 
-// OSに応じたマップアプリ自動起動分岐関数
 function searchOnGoogleMap(keyword) {
   if (!mapDblClickToggle.checked) return; 
   if (!keyword || keyword.includes("ゴール") || keyword.includes("登録なし") || keyword.includes("---")) return;
@@ -972,7 +986,7 @@ function searchOnGoogleMap(keyword) {
   if (/iphone|ipad|ipod/.test(userAgent)) {
     url = "maps://maps.apple.com/?q=" + encodeURIComponent(keyword);
   } else if (/android/.test(userAgent)) {
-    url = "intent://maps.google.com/?q=" + encodeURIComponent(keyword) + "#Intent;scheme=http;package=com.google.android.apps.maps;end";
+    url = "geo:0,0?q=" + encodeURIComponent(keyword);
   } else {
     url = "https://maps.google.com/?q=" + encodeURIComponent(keyword);
   }
@@ -1012,7 +1026,6 @@ shopTitleRow.addEventListener("dblclick", (e) => {
     searchOnGoogleMap(globalShopList[shopDisplayIdx].name);
   }
 });
-
 
 function loadSavedListsDropdown() {
   const savedData = localStorage.getItem("customBRMDataSets3");
@@ -1265,7 +1278,7 @@ function parseTextList(textData, isPCMode = false) {
   const tempResult = [];
   
   for (let line of lines) {
-    const columns = line.split(/[,,、，]/).map(c => c.trim());
+    const columns = line.split(/[,,、，]/).map(c => c.trim()).filter(c => c !== "");
     if (columns.length < 2) continue;
     
     let idOrName = columns[0];
@@ -1312,7 +1325,8 @@ function parseTextList(textData, isPCMode = false) {
       finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`;
       genericCounter++;
     }
-    return { id: finalId, name: item.name, dist: item.dist };
+    let validatedName = item.name ? item.name : item.rawId;
+    return { id: finalId, name: validatedName, dist: item.dist };
   });
 }
 
@@ -1435,7 +1449,7 @@ resetBtn.addEventListener("click", () => {
     
     isPcUserNavigating = false; 
     isShopUserNavigating = false;
-    menuContent.classList.remove("open");
+    menuOverlay.classList.remove("open");
     
     loadSavedListsDropdown();
     savedListsSelect.selectedIndex = 0;
@@ -1444,7 +1458,6 @@ resetBtn.addEventListener("click", () => {
     localStorage.setItem("shopToggleState", "true");
     document.body.classList.remove("shop-off");
     shopCard.style.display = "block";
-    if(document.getElementById("shopInput")) document.getElementById("shopInput").style.display = "block";
 
     mapDblClickToggle.checked = true;
     localStorage.setItem("mapDblClickState", "true");
