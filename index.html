@@ -26,6 +26,7 @@ input, select, textarea {
 .container {
   max-width: 520px;
   margin: auto;
+  position: relative; /* メニューの基準位置用 */
 }
 
 /* ヘッダー */
@@ -74,7 +75,7 @@ input, select, textarea {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.85);
-  z-index: 100;
+  z-index: 110; /* メニュー(z-index: 100)より手前に表示 */
   justify-content: center;
   align-items: center;
   padding: 16px;
@@ -147,14 +148,19 @@ input, select, textarea {
   white-space: pre-wrap;
 }
 
-/* メニューエリア */
+/* メニューエリア（手前に覆いかぶさるように変更） */
 .menu-content {
   display: none;
+  position: absolute; /* 絶対配置に変更 */
+  top: 44px;          /* ヘッダーのすぐ下に配置 */
+  left: 0;
+  right: 0;
   background: #222;
   border-radius: 8px;
   padding: 12px;
-  margin-bottom: 8px;
   border: 1px solid #444;
+  z-index: 100;       /* 既存のメインコンテンツより手前に表示 */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 0, 0, 0.6); /* 覆いかぶさる影を追加 */
 }
 .menu-content.open {
   display: block;
@@ -645,50 +651,6 @@ body.shop-off .big-value { font-size: 36px; }
     </div>
   </div>
 
-  <div class="modal-overlay" id="helpModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title">📖 アプリ使用マニュアル</div>
-        <button class="modal-close-btn" id="modalCloseBtn">閉じる</button>
-      </div>
-      <div class="modal-body">
-        <h4>1. 事前準備 (☰ メメニュー)</h4>
-        <ul>
-          <li><strong>BRM設定:</strong> 距離と制限時間枠を選びます。</li>
-          <li><strong>START日時:</strong> 出発時刻を正確に入力します。</li>
-          <li><strong>① 公式PCリスト:</strong> 「PC1, 地点名, 距離km」で改行入力。</li>
-          <li><strong>② 休憩スポット:</strong> 「店舗名, 距離」で改行入力します。</li>
-        </ul>
-
-        <h4>2. 基本操作</h4>
-        <ul>
-          <li><strong>現在距離の更新:</strong> サイコンの積算距離を入力。</li>
-          <li><strong>目標ペース設計:</strong> PC枠内の15〜20km/h各グロス速度に応じた到着予想時刻を目安に走ります。</li>
-        </ul>
-
-        <h4>3. ナビゲーションとマップ連動</h4>
-        <ul>
-          <li><strong>先行プレビュー:</strong> 各カードの <code>◀ 前</code> <code>次 ▶</code> ボタンで、距離に関係なく先々の地点を自由に確認可能。</li>
-          <li><strong>自動追従へ復帰:</strong> プレビュー中に中央の黄色の距離表示（<code>残り~km</code>）を<strong>ダブルクリック</strong>すると、現在地ベースの「次のスポット」に一発復帰します。</li>
-          <li><strong>マップ検索:</strong> 各カードの「地点名エリア」を<strong>ダブルクリック</strong>すると、その場所をマップで即座に検索できます（メニュー内連動ON時のみ）。</li>
-        </ul>
-
-        <h4>4. 表示のカスタマイズ</h4>
-        <ul>
-          <li>メニュー内の「② コンビニ…」右側のトグルをOFFにすると、休憩枠が隠れ、残ったPC情報や最下段の<strong>「貯金時間」が自動で大きく拡大表示</strong>され、夜間も見やすくなります。</li>
-        </ul>
-
-        <h4>5. 各種ステータス</h4>
-        <ul>
-          <li><strong>必要平均:</strong> 制限時間内にゴールする最低グロス速度。15km/hに近づくと危険です。</li>
-          <li><strong>貯金時間:</strong> 制限時間に対する現在のアドバンテージ。
-            <br><span class="green">🟢 2時間以上</span> / <span class="yellow">🟡 1時間以上</span> / <span class="red">🔴 1時間未満（危険）</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
   <div class="menu-content" id="menuContent">
     <div class="menu-top-row">
       <div class="card-center half" style="background: #333;">
@@ -754,6 +716,50 @@ PC2, 山城大橋, 68.0km"></textarea>
     </div>
 
     <button class="btn-reset" id="resetBtn">リセット</button>
+  </div>
+
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">📖 アプリ使用マニュアル</div>
+        <button class="modal-close-btn" id="modalCloseBtn">閉じる</button>
+      </div>
+      <div class="modal-body">
+        <h4>1. 事前準備 (☰ メメニュー)</h4>
+        <ul>
+          <li><strong>BRM設定:</strong> 距離と制限時間枠を選びます。</li>
+          <li><strong>START日時:</strong> 出発時刻を正確に入力します。</li>
+          <li><strong>① 公式PCリスト:</strong> 「PC1, 地点名, 距離km」で改行入力。</li>
+          <li><strong>② 休憩スポット:</strong> 「店舗名, 距離」で改行入力します。</li>
+        </ul>
+
+        <h4>2. 基本操作</h4>
+        <ul>
+          <li><strong>現在距離の更新:</strong> サイコンの積算距離を入力。</li>
+          <li><strong>目標ペース設計:</strong> PC枠内の15〜20km/h各グロス速度に応じた到着予想時刻を目安に走ります。</li>
+        </ul>
+
+        <h4>3. ナビゲーションとマップ連動</h4>
+        <ul>
+          <li><strong>先行プレビュー:</strong> 各カード of <code>◀ 前</code> <code>次 ▶</code> ボタンで、距離に関係なく先々の地点を自由に確認可能。</li>
+          <li><strong>自動追従へ復帰:</strong> プレビュー中に中央の黄色の距離表示（<code>残り~km</code>）を<strong>ダブルクリック</strong>すると、現在地ベースの「次のスポット」に一発復帰します。</li>
+          <li><strong>マップ検索:</strong> 各カードの「地点名エリア」を<strong>ダブルクリック</strong>すると、その場所をマップで即座に検索できます（メニュー内連動ON時のみ）。</li>
+        </ul>
+
+        <h4>4. 表示のカスタマイズ</h4>
+        <ul>
+          <li>メニュー内の「② コンビニ…」右側のトグルをOFFにすると、休憩枠が隠れ、残ったPC情報や最下段の<strong>「貯金時間」が自動で大きく拡大表示</strong>され、夜間も見やすくなります。</li>
+        </ul>
+
+        <h4>5. 各種ステータス</h4>
+        <ul>
+          <li><strong>必要平均:</strong> 制限時間内にゴールする最低グロス速度。15km/hに近づくと危険です。</li>
+          <li><strong>貯金時間:</strong> 制限時間に対する現在のアドバンテージ。
+            <br><span class="green">🟢 2時間以上</span> / <span class="yellow">🟡 1時間以上</span> / <span class="red">🔴 1時間未満（危険）</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <div class="grid">
@@ -1367,10 +1373,26 @@ function update(isDistanceOrInputChanged = false) {
   renderGraphScale(targetDistance);
   updateDisplayOnly();
 
-  if (!startTime.value || !distance.value) return;
+  if (!startTime.value) return;
   let start = new Date(startTime.value);
+  
+  // スタート前かどうかの判定処理を追加
+  if (now < start) {
+    document.getElementById("elapsed").innerText = "スタート前";
+    document.getElementById("remainTime").innerText = "スタート前";
+    document.getElementById("gross").innerText = "--";
+    document.getElementById("remainDistance").innerText = targetDistance.toFixed(1) + " km";
+    document.getElementById("finish").innerText = "--";
+    document.getElementById("needSpeed").innerText = "--";
+    document.getElementById("saving").innerText = "--";
+    document.getElementById("saving").className = "big-value";
+    return;
+  }
+
   let elapsed = (now - start) / 1000 / 3600;
   if (elapsed <= 0) return;
+
+  if (!distance.value) return;
 
   const gross = currentDist / elapsed;
   const eh = Math.floor(elapsed);
