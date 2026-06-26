@@ -816,6 +816,12 @@ PC2, 山城大橋, 68.0km"></textarea>
           </div>
         </div>
 
+        <div class="menu-input-row" style="margin-top: 6px;">
+          <button class="btn-save" id="exportBtn" style="flex:1;">📤 バックアップ書き出し</button>
+          <button class="btn-save" id="importBtn" style="flex:1; background:#334155;">📥 バックアップ読み込み</button>
+        </div>
+        <input type="file" id="importFileInput" accept="application/json" style="display:none;">
+
         <button class="btn-reset" id="resetBtn">リセット</button>
       </div>
     </div>
@@ -985,6 +991,9 @@ const saveName = document.getElementById("saveName");
 const saveBtn = document.getElementById("saveBtn");
 const savedListsSelect = document.getElementById("savedListsSelect");
 const deleteBtn = document.getElementById("deleteBtn");
+const exportBtn = document.getElementById("exportBtn");
+const importBtn = document.getElementById("importBtn");
+const importFileInput = document.getElementById("importFileInput");
 
 const circleNumbers = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩", "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳"];
 
@@ -1094,8 +1103,28 @@ function searchOnGoogleMap(keyword) {
   if (window.cordova && window.cordova.InAppBrowser) { window.cordova.InAppBrowser.open(url, '_system'); } else { window.open(url, '_blank'); }
 }
 
+// 現在地（緯度経度）を中心にキーワード検索するマップURLを開く
+function searchOnGoogleMapNearby(keyword, lat, lng) {
+  const userAgent = navigator.userAgent.toLowerCase();
+  let url;
+  if (/iphone|ipad|ipod/.test(userAgent)) {
+    url = "http://maps.apple.com/?q=" + encodeURIComponent(keyword) + "&sll=" + lat + "," + lng + "&z=15";
+  } else {
+    url = "https://www.google.com/maps/search/" + encodeURIComponent(keyword) + "/@" + lat + "," + lng + ",15z";
+  }
+  if (window.cordova && window.cordova.InAppBrowser) { window.cordova.InAppBrowser.open(url, '_system'); } else { window.open(url, '_blank'); }
+}
+
 convenienceBtn.addEventListener("click", () => {
-  searchOnGoogleMap("コンビニ");
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { searchOnGoogleMapNearby("コンビニ", pos.coords.latitude, pos.coords.longitude); },
+      () => { searchOnGoogleMap("コンビニ"); }, // 位置情報取得失敗・拒否時はキーワードのみで検索
+      { timeout: 5000, maximumAge: 60000 }
+    );
+  } else {
+    searchOnGoogleMap("コンビニ");
+  }
 });
 
 pcRemainDist.addEventListener("dblclick", (e) => { e.stopPropagation(); if (isPcUserNavigating) { isPcUserNavigating = false; pcDisplayIdx = pcAutoTrackIdx; update(true); } });
@@ -1118,6 +1147,7 @@ function loadSavedListsDropdown() {
 saveBtn.addEventListener("click", () => {
   const name = saveName.value.trim(); if (!name) { alert("保存する名前を入力してください。"); return; }
   const savedData = localStorage.getItem("customBRMDataSets3"); let lists = savedData ? JSON.parse(savedData) : {};
+  if (lists[name] && !confirm("「" + name + "」は既に保存されています。上書きしますか？")) { return; }
   lists[name] = { pc: pcInput.value.trim(), shop: shopInput.value.trim() };
   localStorage.setItem("customBRMDataSets3", JSON.stringify(lists));
   saveName.value = ""; loadSavedListsDropdown(); alert("セット「" + name + "」を保存しました。");
@@ -1139,6 +1169,69 @@ deleteBtn.addEventListener("click", () => {
     delete lists[selectedName]; localStorage.setItem("customBRMDataSets3", JSON.stringify(lists));
     loadSavedListsDropdown(); alert("削除しました。");
   }
+});
+
+// --- バックアップの書き出し / 読み込み（設定・現在の入力内容・保存済みリスト一式をJSON化） ---
+const BACKUP_KEYS = ["startTime", "brm", "distance", "pcList3", "shopList3", "customBRMDataSets3", "shopToggleState", "mapDblClickState", "convenienceBtnState"];
+
+exportBtn.addEventListener("click", () => {
+  const backupData = {};
+  BACKUP_KEYS.forEach(key => { const v = localStorage.getItem(key); if (v !== null) backupData[key] = v; });
+  const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const now = new Date();
+  const stamp = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0') + "_" + String(now.getHours()).padStart(2, '0') + String(now.getMinutes()).padStart(2, '0');
+  a.href = url; a.download = "brm_pace_manager_backup_" + stamp + ".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  alert("バックアップファイルを書き出しました。");
+});
+
+importBtn.addEventListener("click", () => { importFileInput.click(); });
+
+importFileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      const validKeys = Object.keys(parsed).filter(k => BACKUP_KEYS.includes(k));
+      if (validKeys.length === 0) { alert("このファイルには有効なバックアップデータが見つかりませんでした。"); return; }
+      if (!confirm("現在の設定・リストをすべて上書きして読み込みます。よろしいですか？")) return;
+      validKeys.forEach(key => { localStorage.setItem(key, parsed[key]); });
+
+      // 画面の表示値・トグル状態をlocalStorageの内容で再構築
+      startTime.value = localStorage.getItem("startTime") || "";
+      brm.value = localStorage.getItem("brm") || "200,13.5";
+      distance.value = localStorage.getItem("distance") || "";
+      pcInput.value = localStorage.getItem("pcList3") || "";
+      shopInput.value = localStorage.getItem("shopList3") || "";
+
+      const toggleState = localStorage.getItem("shopToggleState");
+      shopToggle.checked = toggleState !== "false";
+      document.body.classList.toggle("shop-off", !shopToggle.checked);
+      shopCard.style.display = shopToggle.checked ? "block" : "none";
+
+      const dblClickState = localStorage.getItem("mapDblClickState");
+      mapDblClickToggle.checked = dblClickState !== "false";
+
+      const convState = localStorage.getItem("convenienceBtnState");
+      convenienceBtnToggle.checked = convState !== "false";
+      convenienceBtnWrapper.style.display = convenienceBtnToggle.checked ? "block" : "none";
+      topRowGrid.classList.toggle("convenience-off", !convenienceBtnToggle.checked);
+
+      isPcUserNavigating = false; isShopUserNavigating = false;
+      loadSavedListsDropdown();
+      update(true);
+      alert("バックアップを読み込みました。");
+    } catch (err) {
+      alert("ファイルの読み込みに失敗しました。正しいバックアップファイルか確認してください。");
+    } finally {
+      importFileInput.value = "";
+    }
+  };
+  reader.readAsText(file);
 });
 
 pcPrevBtn.addEventListener("click", () => { if (globalPCList.length === 0) return; if (pcDisplayIdx > 0) { isPcUserNavigating = true; pcDisplayIdx--; const [targetDistance] = brm.value.split(",").map(Number); renderGraphScale(targetDistance); updateDisplayOnly(); } });
