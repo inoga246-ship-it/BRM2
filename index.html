@@ -1004,6 +1004,10 @@ let isShopUserNavigating = false;
 
 let tempDistanceValue = ""; 
 
+// ① ②のテキスト再パースを「実際に内容が変わった時だけ」に限定するためのキャッシュ
+let lastPcInputText = null;
+let lastShopInputText = null;
+
 function toHalfWidthAlphaNum(str) {
   return str.replace(/[！-～]/g, function(s) {
     return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
@@ -1124,7 +1128,7 @@ savedListsSelect.addEventListener("change", () => {
   const savedData = localStorage.getItem("customBRMDataSets3"); let lists = savedData ? JSON.parse(savedData) : {};
   if (lists[selectedName]) {
     const data = lists[selectedName]; pcInput.value = data.pc || ""; shopInput.value = data.shop || "";
-    isPcUserNavigating = false; isShopUserNavigating = false; update(true); alert("「" + selectedName + "」のデータを読み込みました。");
+    isPcUserNavigating = false; isShopUserNavigating = false; persistInputs(); update(true); alert("「" + selectedName + "」のデータを読み込みました。");
   }
 });
 
@@ -1218,17 +1222,21 @@ function parseTextList(textData, isPCMode = false) {
     let finalId = "";
     if (isPCMode) {
       let cleanId = toHalfWidthAlphaNum(item.rawId);
-      if (cleanId.includes("PC")) { finalId = cleanId.match(/PC\d+/)?.[0] || cleanId; } else if (cleanId.includes("GOAL") || cleanId.includes("FINISH")) { finalId = "GOAL"; } else { finalId = circleNumbers[genericCounter] || `（\${genericCounter + 1}）`; genericCounter++; }
-    } else { finalId = circleNumbers[genericCounter] || `（\${genericCounter + 1}）`; genericCounter++; }
+      if (cleanId.includes("PC")) { finalId = cleanId.match(/PC\d+/)?.[0] || cleanId; } else if (cleanId.includes("GOAL") || cleanId.includes("FINISH")) { finalId = "GOAL"; } else { finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`; genericCounter++; }
+    } else { finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`; genericCounter++; }
     return { id: finalId, name: item.name, dist: item.dist };
   });
 }
 
-function update(isDistanceOrInputChanged = false) {
+function persistInputs() {
   localStorage.setItem("startTime", startTime.value); localStorage.setItem("brm", brm.value); localStorage.setItem("distance", distance.value); localStorage.setItem("pcList3", pcInput.value); localStorage.setItem("shopList3", shopInput.value);
+}
+
+function update(isDistanceOrInputChanged = false) {
   const now = new Date(); document.getElementById("currentTime").innerText = String(now.getHours()).padStart(2, '0') + ":" + String(now.getMinutes()).padStart(2, '0') + ":" + String(now.getSeconds()).padStart(2, '0');
   const currentDist = parseFloat(distance.value) || 0; const [targetDistance, limitHours] = brm.value.split(",").map(Number);
-  globalPCList = parseTextList(pcInput.value, true); globalShopList = parseTextList(shopInput.value, false);
+  if (pcInput.value !== lastPcInputText) { globalPCList = parseTextList(pcInput.value, true); lastPcInputText = pcInput.value; }
+  if (shopInput.value !== lastShopInputText) { globalShopList = parseTextList(shopInput.value, false); lastShopInputText = shopInput.value; }
   let progressPct = Math.min(100, Math.max(0, (currentDist / targetDistance) * 100)); graphBar.style.width = progressPct + "%";
 
   let detectedPcIdx = globalPCList.length > 0 ? globalPCList.length - 1 : -1;
@@ -1273,11 +1281,11 @@ resetBtn.addEventListener("click", () => {
 });
 
 setInterval(() => update(false), 1000);
-distance.addEventListener("input", () => update(true));
-pcInput.addEventListener("input", () => update(true));
-shopInput.addEventListener("input", () => update(true));
-startTime.addEventListener("change", () => update(false));
-brm.addEventListener("change", () => update(false));
+distance.addEventListener("input", () => { persistInputs(); update(true); });
+pcInput.addEventListener("input", () => { persistInputs(); update(true); });
+shopInput.addEventListener("input", () => { persistInputs(); update(true); });
+startTime.addEventListener("change", () => { persistInputs(); update(false); });
+brm.addEventListener("change", () => { persistInputs(); update(false); });
 document.addEventListener("resume", () => update(false), false);
 loadSavedListsDropdown();
 update(true);
