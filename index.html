@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -57,11 +58,6 @@ input, select, textarea {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-.header-logo-svg {
-  width: 38px;
-  height: 38px;
-  filter: drop-shadow(0 0 4px #00d2ff);
 }
 .header-title-block {
   display: flex;
@@ -681,15 +677,6 @@ body.shop-off .big-value { font-size: 36px; }
 
   <div class="header">
     <div class="header-logo-area">
-      <svg class="header-logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="18" cy="44" r="10" stroke="#00d2ff" stroke-width="3"/>
-        <circle cx="18" cy="44" r="4" fill="#00d2ff"/>
-        <circle cx="46" cy="44" r="10" stroke="#00d2ff" stroke-width="3"/>
-        <circle cx="46" cy="44" r="4" fill="#00d2ff"/>
-        <path d="M18 44L30 26H42L46 44M30 26L24 16H34M30 26L18 44" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M38 12L46 20M48 10L42 22" stroke="#00ffaa" stroke-width="2" stroke-linecap="round"/>
-        <path d="M6 24C12 21 20 25 24 20" stroke="#00d2ff" stroke-width="1.5" stroke-dasharray="2 2"/>
-      </svg>
       <div class="header-title-block">
         <span class="header-title-main">BRM PACE MANAGER</span>
       </div>
@@ -700,6 +687,7 @@ body.shop-off .big-value { font-size: 36px; }
     </div>
   </div>
 
+  <!-- メニューエリア（固定モーダル化） -->
   <div class="menu-content" id="menuContent">
     <div class="modal-content" style="border-color: #ffffff; box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);">
       <div class="modal-header">
@@ -775,6 +763,7 @@ PC2, 山城大橋, 68.0km"></textarea>
     </div>
   </div>
 
+  <!-- マニュアル用モーダル -->
   <div class="modal-overlay" id="helpModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -977,7 +966,6 @@ if (savedMapDblClickState === "false") {
   mapDblClickToggle.checked = true;
 }
 
-// メニューイベントの修正（モーダル開閉対応）
 menuTrigger.addEventListener("click", () => menuContent.classList.add("open"));
 menuCloseBtn.addEventListener("click", () => menuContent.classList.remove("open"));
 menuContent.addEventListener("click", (e) => { if (e.target === menuContent) { menuContent.classList.remove("open"); } });
@@ -1137,8 +1125,8 @@ function parseTextList(textData, isPCMode = false) {
     let finalId = "";
     if (isPCMode) {
       let cleanId = toHalfWidthAlphaNum(item.rawId);
-      if (cleanId.includes("PC")) { finalId = cleanId.match(/PC\d+/)?.[0] || cleanId; } else if (cleanId.includes("GOAL") || cleanId.includes("FINISH")) { finalId = "GOAL"; } else { finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`; genericCounter++; }
-    } else { finalId = circleNumbers[genericCounter] || `（${genericCounter + 1}）`; genericCounter++; }
+      if (cleanId.includes("PC")) { finalId = cleanId.match(/PC\d+/)?.[0] || cleanId; } else if (cleanId.includes("GOAL") || cleanId.includes("FINISH")) { finalId = "GOAL"; } else { finalId = circleNumbers[genericCounter] || `（\${genericCounter + 1}）`; genericCounter++; }
+    } else { finalId = circleNumbers[genericCounter] || `（\${genericCounter + 1}）`; genericCounter++; }
     return { id: finalId, name: item.name, dist: item.dist };
   });
 }
